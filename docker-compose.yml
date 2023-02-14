@@ -1,0 +1,76 @@
+version: "3.7"
+services:
+
+  app:
+    build:
+      args:
+        user: kleberalv
+        uid: 1000
+      context: ./Docker
+      dockerfile: Dockerfile
+    image: php8-apllication-server
+    container_name: php8-server-app
+    restart: unless-stopped
+    working_dir: /var/www/
+    volumes:
+      - ./:/var/www
+      - ./Docker/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
+    networks:
+      - servernetwork
+    environment:
+      XDEBUG_CONFIG: "mode=debug,develop,develop start_with_request=yes client_host=host.docker.internal"
+
+  db:
+    image: mariadb:10.5.8
+    container_name: php8-application-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: db_name
+      MYSQL_ROOT_PASSWORD: db_password
+      MYSQL_PASSWORD: db_password
+      MYSQL_USER: db_user
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - ./Docker/database:/var/lib/mysql:rw
+    networks:
+      - servernetwork
+    ports:
+      - 3306:3306
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: php8-application-phpmyadmin
+    restart: unless-stopped
+    ports:
+      - 8090:80
+    environment:
+      PMA_ARBITRARY: 1
+      PMA_HOST: db
+      PMA_PORT: 3306
+    networks:
+      - servernetwork
+
+  nginx:
+    image: nginx:alpine
+    container_name: php8-application-nginx
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - ./:/var/www
+      - ./Docker/nginx:/etc/nginx/conf.d
+    networks:
+      - servernetwork
+
+  frontend:
+    build: ../project-advocacy-frontend
+    ports:
+      - 3000:3000
+    command: npm start
+    volumes:
+      - ../project-advocacy-frontend:/app
+
+networks:
+  servernetwork:
+    driver: bridge
