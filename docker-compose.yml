@@ -19,6 +19,8 @@ services:
       - servernetwork
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    environment:
+      - XDEBUG_MODE=develop,debug
 
   db:
     image: mariadb:10.5.8
