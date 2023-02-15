@@ -14,11 +14,11 @@ services:
     working_dir: /var/www/
     volumes:
       - ./:/var/www
-      - ./Docker/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
+      - ./Docker/php/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
     networks:
       - servernetwork
-    environment:
-      XDEBUG_CONFIG: "mode=debug,develop,develop start_with_request=yes client_host=host.docker.internal"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   db:
     image: mariadb:10.5.8

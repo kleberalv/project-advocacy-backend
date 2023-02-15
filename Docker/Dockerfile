@@ -32,14 +32,6 @@ RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
 RUN pecl install xdebug && docker-php-ext-enable xdebug
 
-RUN echo "\n\
-    xdebug.mode = debug,develop \n\
-    xdebug.start_with_request  = yes \n\
-    xdebug.client_host = 127.0.0.1 \n\
-    xdebug.client_port = 9003 \n\
-    xdebug.idekey=VSCODE \n\
-    " >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
-
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
