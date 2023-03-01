@@ -1,0 +1,55 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Exception;
+
+class UserController extends Controller
+{
+    public function store(Request $request)
+    {
+
+        try {
+            // Validação dos dados recebidos
+            $validator = Validator::make($request->all(), [
+                'nome' => 'required|string|max:255',
+                'cpf' => 'required|string|max:11|unique:tab_usuarios',
+                'senha' => 'required|string|min:8',
+                'email' => 'required|string|email|max:255',
+                'dat_nasc' => 'required|date',
+                'id_perfil' => 'required|integer',
+                'endereco' => 'required|string|max:255',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'message' => 'Ocorreu um erro no cadastro. Por favor, tente novamente',
+                    'errors' => $validator->errors()
+                ], 404);
+            }
+
+            // Criação do usuário
+            $user = User::create([
+                'nome' => $request->nome,
+                'cpf' => $request->cpf,
+                'senha' => Hash::make($request->senha),
+                'email' => $request->email,
+                'dat_nasc' => $request->dat_nasc,
+                'id_perfil' => $request->id_perfil,
+                'endereco' => $request->endereco,
+            ]);
+
+            // Retorno da resposta
+            return response()->json([
+                'message' => 'Usuário criado com sucesso!',
+                'user' => $user,
+            ], 201);
+        } catch (\Exception $e) {
+            throw new Exception($e->getMessage(), 500);
+        }
+    }
+}
