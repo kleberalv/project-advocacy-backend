@@ -9,7 +9,7 @@ services:
       context: ./Docker
       dockerfile: Dockerfile
     image: php8-apllication-server
-    container_name: php8-server-app
+    container_name: apllication-server-app
     restart: unless-stopped
     working_dir: /var/www/
     volumes:
@@ -24,7 +24,7 @@ services:
 
   db:
     image: mariadb:10.5.8
-    container_name: php8-application-db
+    container_name: application-db
     restart: unless-stopped
     environment:
       MYSQL_DATABASE: db_advocacy
@@ -42,7 +42,7 @@ services:
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
-    container_name: php8-application-phpmyadmin
+    container_name: application-phpmyadmin
     restart: unless-stopped
     ports:
       - 8090:80
@@ -55,7 +55,7 @@ services:
 
   nginx:
     image: nginx:alpine
-    container_name: php8-application-nginx
+    container_name: application-nginx
     restart: unless-stopped
     ports:
       - "8080:80"
@@ -67,6 +67,7 @@ services:
 
   frontend:
     build: ../project-advocacy-frontend
+    container_name: application-frontend
     ports:
       - 3000:3000
     command: npm start

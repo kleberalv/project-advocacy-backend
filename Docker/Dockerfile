@@ -18,7 +18,8 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     git-core \
     python3 \
-    gnupg
+    gnupg \
+    nano
 
 RUN curl -sL https://deb.nodesource.com/setup_14.x  | bash -
 RUN apt-get -y install nodejs
@@ -28,7 +29,9 @@ RUN apt-get -y install nodejs
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+RUN docker-php-ext-install mysqli pdo pdo_mysql mbstring exif pcntl bcmath gd
+
+RUN docker-php-ext-enable pdo_mysql
 
 RUN pecl install xdebug && docker-php-ext-enable xdebug
 
