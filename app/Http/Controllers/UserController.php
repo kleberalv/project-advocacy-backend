@@ -18,7 +18,7 @@ class UserController extends Controller
             $validator = Validator::make($request->all(), [
                 'nome' => 'required|string|max:255',
                 'cpf' => 'required|string|max:11|unique:tab_usuarios',
-                'senha' => 'required|string|min:8',
+                'senha' => 'required|string|min:8|max:20',
                 'email' => 'required|string|email|max:255',
                 'dat_nasc' => 'required|date',
                 'id_perfil' => 'required|integer',

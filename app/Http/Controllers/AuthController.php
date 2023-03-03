@@ -30,8 +30,13 @@ class AuthController extends Controller
     {
 
         $validator = Validator::make($request->all(), [
-            'cpf' => 'required|string',
-            'senha' => 'required|string'
+            'cpf' => 'required|string|max:11',
+            'senha' => 'required|string|max:20'
+        ], [
+            'cpf.required' => 'O campo CPF é obrigatório.',
+            'senha.required' => 'O campo senha é obrigatório.',
+            'cpf.max' => 'O campo CPF deve ter no máximo 11 caracteres.',
+            'senha.max' => 'O campo senha deve ter no máximo 20 caracteres.'
         ]);
 
         if ($validator->fails()) {
@@ -43,7 +48,7 @@ class AuthController extends Controller
 
         // Verifica se o usuário foi encontrado e se a senha informada está correta
         if (!$user || !Hash::check($request->senha, $user->senha)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return response()->json(['error' => 'CPF ou senha incorretos. Por favor, verifique e tente novamente.'], 401);
         }
 
         $token = auth()->login($user);
