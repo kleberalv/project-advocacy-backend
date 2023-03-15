@@ -53,7 +53,18 @@ class AuthController extends Controller
 
         $token = auth()->login($user);
 
-        return $this->respondWithToken($token);
+        return response()->json([
+            'user' => [
+                'id_usuario' => $user->id_usuario,
+                'nome' => $user->nome,
+                'cpf' => $user->cpf,
+                'email' => $user->email,
+                'dat_nasc' => $user->dat_nasc,
+                'id_perfil' => $user->id_perfil,
+                'endereco' => $user->endereco,
+            ],
+            'access_token' => $token
+        ]);
     }
 
     /**
