@@ -27,10 +27,10 @@ services:
     container_name: application-db
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: db_advocacy
-      MYSQL_USER: db_user
-      MYSQL_PASSWORD: db_password
-      MYSQL_ROOT_PASSWORD: db_root_password
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       SERVICE_TAGS: dev
       SERVICE_NAME: mysql
     volumes:
@@ -48,8 +48,8 @@ services:
       - 8090:80
     environment:
       PMA_ARBITRARY: 1
-      PMA_HOST: db_advocacy
-      PMA_PORT: 3306
+      PMA_HOST: ${DB_DATABASE}
+      PMA_PORT: ${DB_PORT}
     networks:
       - servernetwork
 

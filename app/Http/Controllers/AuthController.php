@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Resources\UserCollection;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -52,17 +53,11 @@ class AuthController extends Controller
         }
 
         $token = auth()->login($user);
+        $userCollection = new UserCollection([$user]);
 
         return response()->json([
-            'user' => [
-                'id_usuario' => $user->id_usuario,
-                'nome' => $user->nome,
-                'cpf' => $user->cpf,
-                'email' => $user->email,
-                'dat_nasc' => $user->dat_nasc,
-                'id_perfil' => $user->id_perfil,
-                'endereco' => $user->endereco,
-            ],
+            'user' => $userCollection->toArray()
+            ,
             'access_token' => $token
         ]);
     }
@@ -74,8 +69,13 @@ class AuthController extends Controller
      */
     public function me()
     {
-        return response()->json(auth()->user());
-    }
+        $user = auth()->user();
+        $userCollection = new UserCollection([$user]);
+    
+        return response()->json([
+            'user' => $userCollection->toArray()
+        ]);
+    }    
 
     /**
      * Log the user out (Invalidate the token).
