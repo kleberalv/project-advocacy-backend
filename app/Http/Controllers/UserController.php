@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Resources\UserCollection;
 use Exception;
 
 class UserController extends Controller
@@ -50,6 +51,23 @@ class UserController extends Controller
             ], 201);
         } catch (\Exception $e) {
             throw new Exception($e->getMessage(), 500);
+        }
+    }
+
+    public function index()
+    {
+        try {
+            $user = auth()->user();
+            if (!$user) {
+                throw new Exception('Usuário não autenticado. Por favor, realize o logon na plataforma novamente.', 401);
+            }
+            $users = User::all();
+            $userCollection = new UserCollection($users);
+            return response()->json([
+                'users' => $userCollection->toArray()
+            ]);
+        } catch (\Exception $e) {
+            throw new Exception($e->getMessage(), 401);
         }
     }
 }
