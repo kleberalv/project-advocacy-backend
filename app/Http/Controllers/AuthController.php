@@ -44,10 +44,8 @@ class AuthController extends Controller
             return response(['errors' => $validator->errors()->all()], 422);
         }
 
-        // Busca o usuário com o CPF informado
         $user = User::where('cpf', $request->cpf)->first();
 
-        // Verifica se o usuário foi encontrado e se a senha informada está correta
         if (!$user || !Hash::check($request->senha, $user->senha)) {
             return response()->json(['error' => 'CPF ou senha incorretos. Por favor, verifique e tente novamente.'], 401);
         }

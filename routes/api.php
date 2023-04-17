@@ -20,8 +20,13 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('/register', [UserController::class, 'store']);
-Route::post('/index', [UserController::class, 'index']);
+//Login e Logout
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout']);
+
+//Registrar
+Route::post('/register', [UserController::class, 'store']);
+
+//Buscar o própio usuário ou todos
 Route::post('/me', [AuthController::class, 'me']);
+Route::post('/allUsers', [UserController::class, 'allUsers']);

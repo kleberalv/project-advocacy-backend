@@ -15,7 +15,7 @@ class UserController extends Controller
     {
 
         try {
-            // Validação dos dados recebidos
+
             $validator = Validator::make($request->all(), [
                 'nome' => 'required|string|max:255',
                 'cpf' => 'required|string|max:11|unique:tab_usuarios',
@@ -33,7 +33,6 @@ class UserController extends Controller
                 ], 404);
             }
 
-            // Criação do usuário
             $user = User::create([
                 'nome' => $request->nome,
                 'cpf' => $request->cpf,
@@ -44,7 +43,6 @@ class UserController extends Controller
                 'endereco' => $request->endereco,
             ]);
 
-            // Retorno da resposta
             return response()->json([
                 'message' => 'Usuário criado com sucesso!',
                 'user' => $user,
@@ -54,7 +52,7 @@ class UserController extends Controller
         }
     }
 
-    public function index()
+    public function allUsers()
     {
         try {
             $user = auth()->user();
