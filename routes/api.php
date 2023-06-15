@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\TipoPerfilController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,6 +28,12 @@ Route::post('/logout', [AuthController::class, 'logout']);
 //Registrar
 Route::post('/register', [UserController::class, 'store']);
 
+//Atualizar
+Route::post('/update', [UserController::class, 'update']);
+
 //Buscar o própio usuário ou todos
 Route::post('/me', [AuthController::class, 'me']);
 Route::post('/allUsers', [UserController::class, 'allUsers']);
+
+//Buscar tipos de perfis da plataforma
+Route::get('/tiposPerfil', [TipoPerfilController::class, 'index']);
