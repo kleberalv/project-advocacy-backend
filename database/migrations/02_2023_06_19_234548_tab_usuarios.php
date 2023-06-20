@@ -16,11 +16,14 @@ return new class extends Migration
             $table->string('nome');
             $table->string('cpf')->unique();
             $table->string('senha');
-            $table->string('email')->unique();
+            $table->string('email');
             $table->date('dat_nasc');
-            $table->integer('id_perfil');
+            $table->unsignedBigInteger('id_perfil');
             $table->string('endereco');
             $table->timestamps();
+            $table->softDeletes('deleted_at');
+
+            $table->foreign('id_perfil')->references('id_tipo_perfil')->on('tab_tipo_perfil');
         });
     }
 
