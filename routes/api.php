@@ -31,6 +31,9 @@ Route::post('/register', [UserController::class, 'store']);
 //Atualizar
 Route::post('/update', [UserController::class, 'update']);
 
+//Excluir
+Route::post('/delete', [UserController::class, 'delete']);
+
 //Buscar o própio usuário ou todos
 Route::post('/me', [AuthController::class, 'me']);
 Route::post('/allUsers', [UserController::class, 'allUsers']);
