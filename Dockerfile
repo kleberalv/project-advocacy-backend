@@ -21,16 +21,14 @@ RUN apt-get update && apt-get install -y \
     gnupg \
     nano
 
-RUN curl -sL https://deb.nodesource.com/setup_14.x  | bash -
+RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
 RUN apt-get -y install nodejs
-
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
 RUN docker-php-ext-install mysqli pdo pdo_mysql mbstring exif pcntl bcmath gd
-
 RUN docker-php-ext-enable pdo_mysql
 
 RUN pecl install xdebug && docker-php-ext-enable xdebug
@@ -38,12 +36,15 @@ RUN pecl install xdebug && docker-php-ext-enable xdebug
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Create system user to run Composer and Artisan Commands
+# Create system user to run Composer and Artisan commands
 RUN useradd -G www-data,root -u $uid -d /home/$user $user
 RUN mkdir -p /home/$user/.composer && \
     chown -R $user:$user /home/$user
 
-# Set working directory
-WORKDIR /var/www
+WORKDIR /var/www/html
+
+COPY . /var/www/html
+
+RUN composer install
 
 USER $user

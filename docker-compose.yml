@@ -6,7 +6,6 @@ services:
       args:
         user: kleberalv
         uid: 1000
-      context: ./Docker
       dockerfile: Dockerfile
     image: php8-apllication-server
     container_name: apllication-server-app

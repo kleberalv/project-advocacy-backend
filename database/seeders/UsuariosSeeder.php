@@ -31,7 +31,7 @@ class UsuariosSeeder extends Seeder
                 'nome' => 'Edilson Pereira',
                 'cpf' => '14725836900',
                 'senha' => bcrypt('senha789'),
-                'email' => 'Pereira@bol.com',
+                'email' => 'pereira@bol.com',
                 'dat_nasc' => '1981-06-19',
                 'endereco' => 'Fortaleza, Ceará',
                 'id_perfil' => 2,
