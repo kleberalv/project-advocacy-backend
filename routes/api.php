@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
@@ -8,35 +7,24 @@ use App\Http\Controllers\TipoPerfilController;
 
 /*
 |--------------------------------------------------------------------------
-| API Routes
+| API Rotas
 |--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
+| Rota de login/logout
+| Middleware->Autenticacao: Verifica se o token é valido
+| Middleware->permissao: Verifica se o usuário em questão pode acessar as rotas de admin
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
-//Login e Logout
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout']);
 
-//Registrar
-Route::post('/register', [UserController::class, 'store']);
-
-//Atualizar
-Route::post('/update', [UserController::class, 'update']);
-
-//Excluir
-Route::post('/delete', [UserController::class, 'delete']);
-
-//Buscar o própio usuário ou todos
-Route::post('/me', [AuthController::class, 'me']);
-Route::post('/allUsers', [UserController::class, 'allUsers']);
-
-//Buscar tipos de perfis da plataforma
-Route::get('/tiposPerfil', [TipoPerfilController::class, 'index']);
+Route::group(['middleware' => 'autenticacao'], function () {
+    Route::group(['middleware' => 'permissao'], function () {
+        Route::get('/allUsers', [UserController::class, 'allUsers']);
+        Route::get('/tiposPerfil', [TipoPerfilController::class, 'index']);
+        Route::post('/register', [UserController::class, 'store']);
+        Route::post('/update', [UserController::class, 'update']);
+        Route::post('/delete', [UserController::class, 'delete']);
+    });
+    Route::get('/me', [AuthController::class, 'me']);
+});

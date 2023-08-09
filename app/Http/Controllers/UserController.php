@@ -110,10 +110,6 @@ class UserController extends Controller
     public function delete(Request $request)
     {
         try {
-            $user = auth()->user();
-            if (!$user) {
-                throw new Exception('Usuário não autenticado. Por favor, realize o logon na plataforma novamente.', 401);
-            }
             $userId = $request->input('userId');
 
             $userToEdit = User::find($userId);
@@ -135,10 +131,6 @@ class UserController extends Controller
     public function allUsers()
     {
         try {
-            $user = auth()->user();
-            if (!$user) {
-                throw new Exception('Usuário não autenticado. Por favor, realize o logon na plataforma novamente.', 401);
-            }
             $users = User::whereNull('deleted_at')->get();
             $userCollection = new UserCollection($users);
             return response()->json([
