@@ -38,6 +38,18 @@ class UserController extends Controller
         }
     }
 
+    public function index()
+    {
+        try {
+            $users = $this->userService->getIndex();
+            return response()->json([
+                'users' => $users,
+            ]);
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage(), 401);
+        }
+    }
+
     public function update(Request $request)
     {
         try {
@@ -58,26 +70,11 @@ class UserController extends Controller
     public function delete(Request $request)
     {
         try {
-            $result = $this->userService->validateUserToDelete($request->all());
-            if ($result !== null) {
-                return $result;
-            }
+            $user = $this->userService->validateUserToDelete($request->all());
             return response()->json([
-                'message' => 'Usuário excluido com sucesso!',
+                'message' => 'Usuário excluído com sucesso!',
+                'user' => (new UserCollection([$user]))->toArray(),
             ], 200);
-        } catch (\Exception $e) {
-            throw new Exception($e->getMessage(), 401);
-        }
-    }
-
-    public function allUsers()
-    {
-        try {
-            $users = User::whereNull('deleted_at')->get();
-            $userCollection = new UserCollection($users);
-            return response()->json([
-                'users' => $userCollection->toArray()
-            ]);
         } catch (\Exception $e) {
             throw new Exception($e->getMessage(), 401);
         }

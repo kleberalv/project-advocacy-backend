@@ -33,7 +33,7 @@ class UserService
             '*' => [
                 'required' => 'O campo :attribute é obrigatório',
                 'min' => 'O campo :attribute deve conter no mínimo :min caracteres',
-                'max' => 'O campo :attribute deve conter no mínimo :max caracteres',
+                'max' => 'O campo :attribute deve conter no máximo :max caracteres',
             ],
             'cpf.unique' => 'Este CPF já está cadastrado para outro usuário',
         ];
@@ -49,6 +49,27 @@ class UserService
         return;
     }
 
+    private function senhaUser($data)
+    {
+        $senha = isset($data['senha']) ? Hash::make($data['senha']) : Hash::make('PrimeiroAcesso2023');
+        $data['senha'] = $senha;
+        return $data;
+    }
+
+    public function validateUserToDelete($user)
+    {
+        $data = $this->userRepository->getUserById($user);
+        if (!$data) {
+            throw new Exception('Usuário não encontrado', 404);
+        }
+        return $this->deleteUser($data);
+    }
+
+    public function getIndex()
+    {
+        $users = $this->userRepository->getIndex();
+        return $users;
+    }
 
     public function createUser($user)
     {
@@ -69,22 +90,5 @@ class UserService
     public function deleteUser($user)
     {
         return $user = $this->userRepository->deleteUser((object)$user);
-    }
-
-    private function senhaUser($data)
-    {
-        $senha = isset($data['senha']) ? Hash::make($data['senha']) : Hash::make('PrimeiroAcesso2023');
-        $data['senha'] = $senha;
-        return $data;
-    }
-
-    public function validateUserToDelete($user)
-    {
-        $data = $this->userRepository->getUserById($user);
-        // $data = null;
-        if (!$data) {
-            throw new Exception('Usuário não encontrado', 401);
-        }
-        return $this->deleteUser($data);
     }
 }

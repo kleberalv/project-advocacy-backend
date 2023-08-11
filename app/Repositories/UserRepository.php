@@ -13,6 +13,11 @@ class UserRepository
         return $user;
     }
 
+    public function getIndex()
+    {
+        return User::whereNull('deleted_at')->get();
+    }
+
     public function createUser($user)
     {
         return User::create($user);
