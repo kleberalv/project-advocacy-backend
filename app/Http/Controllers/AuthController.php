@@ -2,115 +2,80 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
+use App\Services\AuthService;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use App\Http\Resources\UserCollection;
-use Illuminate\Support\Facades\Validator;
 
+/**
+ * Controlador responsável pela autenticação e gerenciamento de usuários.
+ */
 class AuthController extends Controller
 {
     /**
-     * Create a new AuthController instance.
+     * Instância do serviço de autenticação.
      *
-     * @return void
+     * @var AuthService
      */
-    public function __construct()
+    private $authService;
+
+    /**
+     * Cria uma nova instância do controlador.
+     *
+     * @param AuthService $authService O serviço de autenticação.
+     */
+    public function __construct(AuthService $authService)
     {
-        $this->middleware('auth:api', ['except' => ['login']]);
+        $this->authService = $authService;
     }
 
     /**
-     * Get a JWT via given credentials.
+     * Realiza o processo de autenticação do usuário.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @param Request $request A requisição contendo os dados de login.
+     * @return \Illuminate\Http\JsonResponse Os dados do usuário autenticado.
+     *
+     * @throws Exception Em caso de erro durante a autenticação.
      */
     public function login(Request $request)
     {
-
-        $validator = Validator::make($request->all(), [
-            'cpf' => 'required|string|max:11',
-            'senha' => 'required|string|max:20'
-        ], [
-            'cpf.required' => 'O campo CPF é obrigatório.',
-            'senha.required' => 'O campo senha é obrigatório.',
-            'cpf.max' => 'O campo CPF deve ter no máximo 11 caracteres.',
-            'senha.max' => 'O campo senha deve ter no máximo 20 caracteres.'
-        ]);
-
-        if ($validator->fails()) {
-            return response(['errors' => $validator->errors()->all()], 422);
+        try {
+            $validationResponse = $this->authService->validateFieldsLogin($request->all());
+            if ($validationResponse !== null) {
+                return $validationResponse;
+            }
+            $user = $this->authService->validateUserToLogin($request->all());
+            return response()->json($user);
+        } catch (\Exception $e) {
+            throw new Exception($e->getMessage(), 401);
         }
-
-        $user = User::where('cpf', $request->cpf)->first();
-
-        if (!$user || !Hash::check($request->senha, $user->senha)) {
-            return response()->json(['error' => 'CPF ou senha incorretos. Por favor, verifique e tente novamente.'], 401);
-        }
-
-        $token = auth()->login($user);
-        $userCollection = new UserCollection([$user]);
-
-        return response()->json([
-            'user' => $userCollection->toArray()
-            ,
-            'access_token' => $token
-        ]);
     }
 
     /**
-     * Get the authenticated User.
+     * Retorna os dados do usuário autenticado.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\JsonResponse Os dados do usuário autenticado.
      */
     public function me()
     {
-        $user = auth()->user();
-        $userCollection = new UserCollection([$user]);
-    
-        return response()->json([
-            'user' => $userCollection->toArray()
-        ]);
-    }    
+        try {
+            return $this->authService->me();
+        } catch (\Exception $e) {
+            throw new Exception($e->getMessage(), 401);
+        }
+    }
 
     /**
-     * Log the user out (Invalidate the token).
+     * Realiza o processo de logout do usuário autenticado.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\JsonResponse A mensagem de sucesso no logout.
      */
     public function logout()
     {
-        auth()->logout();
-
-        return response()->json(['message' => 'Successfully logged out']);
-    }
-
-    /**
-     * Refresh a token.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function refresh()
-    {
-        return $this->respondWithToken(auth()->refresh());
-    }
-
-    /**
-     * Get the token array structure.
-     *
-     * @param  string $token
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    protected function respondWithToken($token)
-    {
-        return response()->json([
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60,
-            'user' => auth()->user()
-        ]);
+        try {
+            return $this->authService->logout();
+        } catch (\Exception $e) {
+            throw new Exception($e->getMessage(), 401);
+        }
     }
 }

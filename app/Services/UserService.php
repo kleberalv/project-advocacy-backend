@@ -8,15 +8,34 @@ use Illuminate\Support\Facades\Hash;
 use App\Helpers\Helper;
 use Exception;
 
+/**
+ * Classe responsável por fornecer serviços relacionados aos usuários.
+ */
 class UserService
 {
+    /**
+     * Repositório de usuário.
+     *
+     * @var UserRepository
+     */
     private $userRepository;
 
+    /**
+     * Cria uma nova instância do serviço.
+     *
+     * @param UserRepository $userRepository O repositório de usuário.
+     */
     public function __construct(UserRepository $userRepository)
     {
         $this->userRepository = $userRepository;
     }
 
+    /**
+     * Valida os dados de entrada do usuário.
+     *
+     * @param array $data Os dados do usuário a serem validados.
+     * @return \Illuminate\Http\JsonResponse|null A resposta de erro em caso de validação falha.
+     */
     public function validateUserInput(array $data)
     {
         $data = Helper::formatCPF($data);
@@ -49,6 +68,12 @@ class UserService
         return;
     }
 
+    /**
+     * Cria uma senha segura para o usuário.
+     *
+     * @param array $data Os dados do usuário.
+     * @return array Os dados do usuário com a senha criptografada.
+     */
     private function senhaUser($data)
     {
         $senha = isset($data['senha']) ? Hash::make($data['senha']) : Hash::make('PrimeiroAcesso2023');
@@ -56,6 +81,14 @@ class UserService
         return $data;
     }
 
+    /**
+     * Valida o usuário para exclusão e realiza a exclusão lógica.
+     *
+     * @param array $user Os dados do usuário a serem validados e excluídos.
+     * @return mixed O usuário excluído.
+     *
+     * @throws Exception Se o usuário não for encontrado.
+     */
     public function validateUserToDelete($user)
     {
         $data = $this->userRepository->getUserById($user);
@@ -65,12 +98,23 @@ class UserService
         return $this->deleteUser($data);
     }
 
+    /**
+     * Retorna a lista de usuários.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection A lista de usuários.
+     */
     public function getIndex()
     {
         $users = $this->userRepository->getIndex();
         return $users;
     }
 
+    /**
+     * Cria um novo usuário.
+     *
+     * @param array $user Os dados do novo usuário.
+     * @return mixed O usuário criado.
+     */
     public function createUser($user)
     {
         $data = Helper::formatCPF($user);
@@ -78,6 +122,12 @@ class UserService
         return $this->userRepository->createUser($dados);
     }
 
+    /**
+     * Atualiza um usuário existente.
+     *
+     * @param array $user Os dados do usuário a serem atualizados.
+     * @return mixed O usuário atualizado.
+     */
     public function updateUser($user)
     {
         $data = Helper::formatCPF($user);
@@ -87,6 +137,12 @@ class UserService
         return $this->userRepository->updateUser($data);
     }
 
+    /**
+     * Exclui logicamente um usuário.
+     *
+     * @param mixed $user O usuário a ser excluído.
+     * @return mixed O usuário excluído.
+     */
     public function deleteUser($user)
     {
         return $user = $this->userRepository->deleteUser((object)$user);

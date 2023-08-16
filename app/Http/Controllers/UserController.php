@@ -3,24 +3,40 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\User;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\UserCollection;
 use Exception;
 use App\Services\UserService;
-use App\Repositories\UserRepository;
 
+/**
+ * Controlador para gerenciamento de usuários.
+ */
 class UserController extends Controller
 {
-
+    /**
+     * Instância do serviço de usuários.
+     *
+     * @var UserService
+     */
     private $userService;
 
+    /**
+     * Cria uma nova instância do controlador.
+     *
+     * @param UserService $userService O serviço de usuários.
+     */
     public function __construct(UserService $userService)
     {
         $this->userService = $userService;
     }
 
+    /**
+     * Cria um novo usuário.
+     *
+     * @param Request $request A requisição contendo os dados do usuário.
+     * @return \Illuminate\Http\JsonResponse Os dados do usuário criado.
+     *
+     * @throws Exception Em caso de erro na criação do usuário.
+     */
     public function store(Request $request)
     {
         try {
@@ -38,6 +54,13 @@ class UserController extends Controller
         }
     }
 
+    /**
+     * Retorna a lista de usuários.
+     *
+     * @return \Illuminate\Http\JsonResponse A lista de usuários.
+     *
+     * @throws Exception Em caso de erro na recuperação da lista de usuários.
+     */
     public function index()
     {
         try {
@@ -50,6 +73,14 @@ class UserController extends Controller
         }
     }
 
+    /**
+     * Atualiza um usuário existente.
+     *
+     * @param Request $request A requisição contendo os dados do usuário.
+     * @return \Illuminate\Http\JsonResponse Os dados do usuário atualizado.
+     *
+     * @throws Exception Em caso de erro na atualização do usuário.
+     */
     public function update(Request $request)
     {
         try {
@@ -67,6 +98,14 @@ class UserController extends Controller
         }
     }
 
+    /**
+     * Exclui um usuário.
+     *
+     * @param Request $request A requisição contendo os dados do usuário a ser excluído.
+     * @return \Illuminate\Http\JsonResponse Os dados do usuário excluído.
+     *
+     * @throws Exception Em caso de erro na exclusão do usuário.
+     */
     public function delete(Request $request)
     {
         try {

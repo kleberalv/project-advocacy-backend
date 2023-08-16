@@ -2,15 +2,17 @@
 
 namespace App\Http\Resources;
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 
+/**
+ * Classe para transformar uma coleção de recursos de usuário em um array.
+ */
 class UserCollection extends Collection
 {
     /**
-     * Transform the resource collection into an array.
+     * Transforma a coleção de recursos em um array.
      *
-     * @return array<int|string, mixed>
+     * @return array<int|string, mixed> O array contendo os recursos de usuário transformados.
      */
     public function toArray()
     {

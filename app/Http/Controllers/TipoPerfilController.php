@@ -2,13 +2,44 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\TipoPerfil;
+use Exception;
+use App\Services\TipoPerfilService;
 
+/**
+ * Controlador para gerenciamento de tipos de perfis de usuário.
+ */
 class TipoPerfilController extends Controller
 {
+    /**
+     * Instância do serviço de tipos de perfil.
+     *
+     * @var TipoPerfilService
+     */
+    private $tipoPerfilService;
+
+    /**
+     * Cria uma nova instância do controlador.
+     *
+     * @param TipoPerfilService $tipoPerfilService O serviço de tipos de perfil.
+     */
+    public function __construct(TipoPerfilService $tipoPerfilService)
+    {
+        $this->tipoPerfilService = $tipoPerfilService;
+    }
+
+    /**
+     * Retorna os tipos de perfis de usuário.
+     *
+     * @return \Illuminate\Http\JsonResponse Os tipos de perfis de usuário.
+     *
+     * @throws Exception Em caso de erro na recuperação dos tipos de perfil.
+     */
     public function profiles()
     {
-        $tiposPerfil = TipoPerfil::all();
-        return response()->json($tiposPerfil, 200);
+        try {
+            return $this->tipoPerfilService->profiles();
+        } catch (\Exception $e) {
+            throw new Exception($e->getMessage(), 401);
+        }
     }
 }

@@ -2,27 +2,36 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
+/**
+ * Classe que representa o modelo de usuário.
+ */
 class User extends Authenticatable implements JWTSubject
 {
     use HasFactory;
 
-    // nome da tabela no banco de dados
+    /**
+     * Nome da tabela associada ao modelo.
+     *
+     * @var string
+     */
     protected $table = 'tab_usuarios';
 
     /**
-     * The primary key associated with the table.
+     * Nome da chave primária do modelo.
      *
      * @var string
      */
     protected $primaryKey = 'id_usuario';
 
+    /**
+     * Os atributos que são atribuíveis em massa.
+     *
+     * @var array
+     */
     protected $fillable = [
         'nome',
         'cpf',
@@ -33,10 +42,8 @@ class User extends Authenticatable implements JWTSubject
         'endereco'
     ];
 
-    // Rest omitted for brevity
-
     /**
-     * Get the identifier that will be stored in the subject claim of the JWT.
+     * Obtém o identificador que será armazenado no token JWT.
      *
      * @return mixed
      */
@@ -46,7 +53,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * Return a key value array, containing any custom claims to be added to the JWT.
+     * Define quais reivindicações personalizadas serão adicionadas ao token JWT.
      *
      * @return array
      */
@@ -56,7 +63,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * Get the password for the user.
+     * Obtém a senha do usuário para autenticação.
      *
      * @return string
      */
@@ -66,9 +73,9 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * Set the user's password.
+     * Define a senha do usuário, aplicando a função bcrypt para criptografia.
      *
-     * @param  string  $value
+     * @param string $value A senha do usuário.
      * @return void
      */
     public function setPasswordAttribute($value)
