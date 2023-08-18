@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\User;
+use App\Models\TokenUser;
 
 /**
  * Classe responsável por acessar os dados relacionados aos usuários.
@@ -19,6 +20,42 @@ class UserRepository
     {
         $user = User::where('cpf', $userToAuthenticate['cpf'])->first();
         return $user;
+    }
+
+    /**
+     * Registra o token de acesso para o usuário no momento do login.
+     *
+     * @param User $user O usuário para o qual o token está sendo registrado.
+     * @param string $token O token de acesso gerado.
+     * @return TokenUser O token de usuário registrado salvo na tabela.
+     */
+    public function setTokenUserLogin($user, $token)
+    {
+        return TokenUser::create([
+            'tokenable_type' => get_class($user),
+            'tokenable_id_usuario' => $user['id_usuario'],
+            'name_token' => 'JWT Access Token for ' . $user['nome'],
+            'token' => $token,
+            'id_perfil_permissions' => $user['id_perfil'],
+            'expires_at' => now()->addHour(),
+        ]);
+    }
+
+    /**
+     * Regista o logout do usuário, excluindo logicamente o token do usuário.
+     *
+     * @param User $user O usuário para o qual o logout está sendo realizado.
+     * @return void
+     */
+    public function setTokenUserLogout($user)
+    {
+        $lastToken = TokenUser::where('tokenable_id_usuario', $user['id_usuario'])
+            ->orderByDesc('id_token')
+            ->first();
+        if ($lastToken) {
+            $lastToken->deleted_at = now();
+            $lastToken->save();
+        }
     }
 
     /**

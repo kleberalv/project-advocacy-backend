@@ -103,16 +103,14 @@ class AuthService
      */
     public function login($userToAutenticate, $user)
     {
-
         $data = $this->userRepository->login($userToAutenticate, $user);
 
         if (!$data || !Hash::check($userToAutenticate['senha'], $data['senha'])) {
             throw new Exception('CPF ou senha incorretos. Por favor, verifique e tente novamente.', 401);
         }
-
         $token = auth()->login($data);
+        $this->userRepository->setTokenUserLogin($data, $token);
         $userCollection = new UserCollection([$data]);
-
         return [
             'user' => $userCollection->toArray(),
             'access_token' => $token
@@ -126,8 +124,9 @@ class AuthService
      */
     public function logout()
     {
+        $user = auth()->user();
+        $this->userRepository->setTokenUserLogout($user);
         Auth::logout();
-
         return response()->json(['message' => 'Usuário deslogado com sucesso']);
     }
 }
