@@ -69,7 +69,7 @@ services:
     container_name: application-frontend
     ports:
       - 3000:3000
-    command: npm start
+    command: bash -c "npm install --legacy-peer-deps && npm start"
     volumes:
       - ../project-advocacy-frontend:/app
 

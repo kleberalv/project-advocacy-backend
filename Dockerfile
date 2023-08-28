@@ -57,8 +57,5 @@ WORKDIR /var/www/html
 # Copia o código fonte da aplicação para a imagem
 COPY . /var/www/html
 
-# Executa a instalação das dependências usando o Composer
-RUN composer install
-
 # Define o usuário padrão para execução dos comandos subsequentes
 USER $user
