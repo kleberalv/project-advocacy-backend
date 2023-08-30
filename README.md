@@ -6,23 +6,23 @@ Este projeto consiste em uma infraestrutura de contêineres que abrange cinco co
 
 Aqui está uma visão detalhada de cada contêiner:
 
-1- app:
+1. app:
 
 Este contêiner é responsável por hospedar a aplicação principal desenvolvida em PHP. Ele é construído a partir de um Dockerfile personalizado que foi configurado para operar em conjunto com o servidor PHP. O uso do Xdebug facilita as atividades de desenvolvimento e depuração, tornando o processo mais eficiente.
 
-2- db:
+2. db:
 
 O contêiner MariaDB é dedicado ao armazenamento dos dados do aplicativo. Ele oferece um ambiente seguro para a persistência de informações cruciais, como tabelas e registros. A presença desse contêiner é fundamental para garantir o funcionamento correto e a integridade dos dados.
 
-3- phpmyadmin:
+3. phpmyadmin:
 
 Este contêiner hospeda uma interface web do phpMyAdmin, uma ferramenta de administração de banco de dados. Através dele, é possível interagir com o banco de dados MariaDB de maneira intuitiva e conveniente, facilitando tarefas administrativas e manipulação de dados.
 
-4- nginx:
+4. nginx:
 
 Atuando como servidor web, o contêiner Nginx direciona as solicitações HTTP para a aplicação PHP. Além disso, ele proporciona uma camada extra de segurança e otimização de desempenho, contribuindo para uma experiência de usuário mais eficiente e segura.
 
-5- frontend:
+5. frontend:
 
 Este contêiner é encarregado de hospedar a camada frontal (frontend) do aplicativo. Construído a partir do código-fonte do projeto de frontend, ele inicia um ambiente de desenvolvimento para a interface do usuário, utilizando ferramentas como o npm. Para configurar esse contêiner, é importante garantir que o frontend (project-advocacy-frontend) esteja localizado na mesma pasta deste projeto.
 
@@ -50,24 +50,24 @@ Este projeto é fornecido "no estado em que se encontra", sem garantias de qualq
 
 Siga as etapas abaixo para configurar e executar o projeto:
 
-1- Clone os repositórios do project-advocacy-backend e project-advocacy-frontend para a mesma pasta em seu sistema.
+1. Clone os repositórios do project-advocacy-backend e project-advocacy-frontend para a mesma pasta em seu sistema.
 
-2- Abra um terminal e navegue até o diretório project-advocacy-backend.
+2. Abra um terminal e navegue até o diretório project-advocacy-backend.
 
-3- Copie os dados do arquivo .env.example, crie um arquivo na raiz do projeto chamado .env e cole dentro dele os dados presentes em .env.example.
+3. Copie os dados do arquivo .env.example, crie um arquivo na raiz do projeto chamado .env e cole dentro dele os dados presentes em .env.example.
 
-4- Execute o seguinte comando para construir e iniciar os contêineres:
-'docker-compose up -d --build'
+4. Execute o seguinte comando para construir e iniciar os contêineres:
+`docker-compose up -d --build`
 
-5- Após o download e a criação dos contêineres, acesse o contêiner app através do terminal:
-'docker exec -it apllication-server-app /bin/bash'
+5. Após o download e a criação dos contêineres, acesse o contêiner app através do terminal:
+`docker exec -it apllication-server-app /bin/bash`
 
-6- Dentro do contêiner app, execute os seguintes comandos:
-'composer install',
-'php artisan migrate' e 
-'php artisan db:seed'.
+6. Dentro do contêiner app, execute os seguintes comandos:
+`composer install`,
+`php artisan migrate` e 
+`php artisan db:seed`.
 
-7- Agora, você pode acessar o projeto em seu navegador através do link: http://localhost:3000/.
+7. Agora, você pode acessar o projeto em seu navegador através do link: http://localhost:3000/.
 
 ## Tecnologias utilizadas
 <div align="left">
