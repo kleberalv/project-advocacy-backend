@@ -63,22 +63,24 @@ class AuthService
      * Valida o usuário para login e realiza a autenticação.
      *
      * @param array $userToAuthenticate Os dados do usuário para autenticação.
-     * @return array Os dados do usuário autenticado e o token de acesso.
+     * @return array Os dados do usuário.
      *
-     * @throws Exception Se o usuário não for encontrado ou a senha estiver incorreta.
+     * @throws Exception Se o usuário não for encontrado, a senha estiver incorreta ou o usuário estiver desativado.
      */
     public function validateUserToLogin($userToAutenticate)
     {
-
         $user = $this->userRepository->getUserByCpf($userToAutenticate['cpf']);
         if (!$user) {
             throw new Exception('Não foi encontrado um usuário com o CPF informado', 404);
         }
-        return $this->login($userToAutenticate, $user);
+        if ($user->deleted_at !== null) {
+            throw new Exception('Este usuário está desativado', 403);
+        }
+        return $this->login($userToAutenticate);
     }
 
     /**
-     * Retorna informações sobre o usuário autenticado (usuário "me").
+     * Retorna informações sobre o usuário autenticado.
      *
      * @return \Illuminate\Http\JsonResponse As informações do usuário autenticado.
      */
@@ -96,14 +98,13 @@ class AuthService
      * Realiza o login do usuário.
      *
      * @param array $userToAuthenticate Os dados do usuário para autenticação.
-     * @param array $user Os dados do usuário autenticado.
      * @return array Os dados do usuário autenticado e o token de acesso.
      *
      * @throws Exception Se o usuário não for encontrado ou a senha estiver incorreta.
      */
-    public function login($userToAutenticate, $user)
+    public function login($userToAutenticate)
     {
-        $data = $this->userRepository->login($userToAutenticate, $user);
+        $data = $this->userRepository->login($userToAutenticate);
 
         if (!$data || !Hash::check($userToAutenticate['senha'], $data['senha'])) {
             throw new Exception('CPF ou senha incorretos. Por favor, verifique e tente novamente.', 401);
@@ -126,7 +127,6 @@ class AuthService
     {
         $user = auth()->user();
         $this->userRepository->setTokenUserLogout($user);
-        Auth::logout();
         return response()->json(['message' => 'Usuário deslogado com sucesso']);
     }
 }

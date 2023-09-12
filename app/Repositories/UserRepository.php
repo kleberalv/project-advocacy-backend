@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\User;
 use App\Models\TokenUser;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Classe responsável por acessar os dados relacionados aos usuários.
@@ -16,7 +17,7 @@ class UserRepository
      * @param array $userToAuthenticate Os dados do usuário para autenticação.
      * @return User|null O usuário autenticado ou null se não encontrado.
      */
-    public function login($userToAuthenticate, $user)
+    public function login($userToAuthenticate)
     {
         $user = User::where('cpf', $userToAuthenticate['cpf'])->first();
         return $user;
@@ -56,6 +57,7 @@ class UserRepository
             $lastToken->deleted_at = now();
             $lastToken->save();
         }
+        return Auth::logout();
     }
 
     /**
@@ -88,7 +90,10 @@ class UserRepository
      */
     public function getIndex()
     {
-        return User::whereNull('deleted_at')->get();
+        $usuarioAtual = Auth::user();
+        return User::whereNull('deleted_at')
+            ->where('id_usuario', '!=', $usuarioAtual->id_usuario)
+            ->get();
     }
 
     /**
@@ -119,6 +124,7 @@ class UserRepository
                 $userToUpdate->$field = $value;
             }
         }
+        $userToUpdate->updated_at = now();
         $userToUpdate->save();
         return $userToUpdate;
     }

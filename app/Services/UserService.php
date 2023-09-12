@@ -6,6 +6,7 @@ use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use App\Helpers\Helper;
+use Illuminate\Http\Response;
 use Exception;
 
 /**
@@ -63,7 +64,7 @@ class UserService
 
             return response()->json([
                 'message' => $errorMessage,
-            ], 404);
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
         return;
     }
