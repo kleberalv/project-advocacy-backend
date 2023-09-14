@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Helpers\Helper;
 use Illuminate\Http\Response;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Classe responsável por fornecer serviços relacionados aos usuários.
@@ -131,11 +132,15 @@ class UserService
      */
     public function updateUser($user)
     {
-        $data = Helper::formatCPF($user);
-        if (isset($user['senha'])) {
-            $data = $this->senhaUser($user);
+        $user = Helper::formatCPF($user);
+        $userToUpdate = $this->userRepository->getUserByCpf($user);
+        if (!$userToUpdate) {
+            throw new \Exception('Usuário não encontrado', 404);
         }
-        return $this->userRepository->updateUser($data);
+        if (isset($user['senha'])) {
+            $user = $this->senhaUser($user);
+        }
+        return $this->userRepository->updateUser($user, $userToUpdate);
     }
 
     /**
@@ -146,6 +151,10 @@ class UserService
      */
     public function deleteUser($user)
     {
+        $usuarioAtual = Auth::user();
+        if ($usuarioAtual->id_usuario === $user['id_usuario']) {
+            throw new Exception('Não é possível excluir a sua própia conta de usuário', 403);
+        }
         return $user = $this->userRepository->deleteUser((object)$user);
     }
 }

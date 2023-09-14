@@ -19,8 +19,7 @@ class UserRepository
      */
     public function login($userToAuthenticate)
     {
-        $user = User::where('cpf', $userToAuthenticate['cpf'])->first();
-        return $user;
+        return User::where('cpf', $userToAuthenticate['cpf'])->first();
     }
 
     /**
@@ -53,10 +52,8 @@ class UserRepository
         $lastToken = TokenUser::where('tokenable_id_usuario', $user['id_usuario'])
             ->orderByDesc('id_token')
             ->first();
-        if ($lastToken) {
-            $lastToken->deleted_at = now();
-            $lastToken->save();
-        }
+        $lastToken->deleted_at = now();
+        $lastToken->save();
         return Auth::logout();
     }
 
@@ -68,8 +65,7 @@ class UserRepository
      */
     public function getUserById($user)
     {
-        $user = User::where('id_usuario', $user['id'])->first();
-        return $user;
+        return User::where('id_usuario', $user['id'])->first();
     }
 
     /**
@@ -78,9 +74,9 @@ class UserRepository
      * @param string $cpf O CPF do usuário.
      * @return User|null O usuário encontrado ou null se não encontrado.
      */
-    public function getUserByCpf($cpf)
+    public function getUserByCpf($user)
     {
-        return User::where('cpf', $cpf)->first();
+        return User::where('cpf', $user['cpf'])->first();
     }
 
     /**
@@ -113,12 +109,8 @@ class UserRepository
      * @param array $user Os dados do usuário a serem atualizados.
      * @return User O usuário atualizado.
      */
-    public function updateUser($user)
+    public function updateUser($user, $userToUpdate)
     {
-        $userToUpdate = User::find($user['id']);
-        if (!$userToUpdate) {
-            throw new \Exception('Usuário não encontrado', 404);
-        }
         foreach ($user as $field => $value) {
             if (in_array($field, $userToUpdate->getFillable())) {
                 $userToUpdate->$field = $value;

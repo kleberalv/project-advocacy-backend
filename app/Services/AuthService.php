@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
+use App\Helpers\Helper;
 use Exception;
 use App\Repositories\UserRepository;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Resources\UserCollection;
 use Illuminate\Support\Facades\Validator;
@@ -39,7 +39,7 @@ class AuthService
      */
     public function validateFieldsLogin($data)
     {
-
+        $data = Helper::formatCPF($data);
         $rules = [
             'cpf' => 'required|string|max:11',
             'senha' => 'required|string|max:20'
@@ -69,7 +69,8 @@ class AuthService
      */
     public function validateUserToLogin($userToAutenticate)
     {
-        $user = $this->userRepository->getUserByCpf($userToAutenticate['cpf']);
+        $userToAutenticate = Helper::formatCPF($userToAutenticate);
+        $user = $this->userRepository->getUserByCpf($userToAutenticate);
         if (!$user) {
             throw new Exception('Não foi encontrado um usuário com o CPF informado', 404);
         }
