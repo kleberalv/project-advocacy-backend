@@ -27,7 +27,7 @@ class TipoPerfilSeeder extends Seeder
                 'created_at' => $now,
             ],
             [
-                'nome_perfil' => 'Usuário',
+                'nome_perfil' => 'Cliente',
                 'created_at' => $now,
             ],
         ]);

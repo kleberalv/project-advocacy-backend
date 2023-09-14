@@ -11,22 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tab_processo', function (Blueprint $table) {
-            $table->id('id_processo');
-            $table->unsignedBigInteger('id_usuario');
-            $table->string('num_processo_sei');
+        Schema::create('tab_status', function (Blueprint $table) {
+            $table->id('id_status');
+            $table->string('status');
+            $table->text('descricao')->nullable();
             $table->timestamps();
             $table->softDeletes('deleted_at');
-
-            $table->foreign('id_usuario')->references('id_usuario')->on('tab_usuarios');
         });
     }
+
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('tab_processo');
+        Schema::dropIfExists('tab_status');
     }
 };
