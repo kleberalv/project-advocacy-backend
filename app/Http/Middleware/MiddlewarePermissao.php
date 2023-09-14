@@ -22,10 +22,14 @@ class MiddlewarePermissao
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $user = auth()->user();
-        if ($user->id_perfil !== 1) {
-            throw new \Exception('Usuário não possui autorização para acessar esta funcionalidade.', 403);
+        try {
+            $user = auth()->user();
+            if ($user->id_perfil !== 1) {
+                return response(['errors' => 'Usuário não possui autorização para acessar esta funcionalidade'], Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+            return $next($request);
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-        return $next($request);
     }
 }

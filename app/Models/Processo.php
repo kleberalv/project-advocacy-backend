@@ -23,7 +23,7 @@ class Processo extends Model
 
         static::saving(function ($processo) {
             if ($processo->id_advogado !== 2 || $processo->id_cliente !== 3) {
-                throw new \Exception('Restrição de chave estrangeira violada.');
+                throw new \Exception('Restrição de chave estrangeira violada', 500);
             }
         });
     }

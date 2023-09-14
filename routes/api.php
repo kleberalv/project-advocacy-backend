@@ -20,11 +20,8 @@ Route::post('/logout', [AuthController::class, 'logout']);
 
 Route::group(['middleware' => 'autenticacao'], function () {
     Route::group(['middleware' => 'permissao'], function () {
-        Route::post('/store', [UserController::class, 'store']);
-        Route::get('/index', [UserController::class, 'index']);
-        Route::post('/update', [UserController::class, 'update']);
-        Route::post('/delete', [UserController::class, 'delete']);
-        Route::get('/profiles', [TipoPerfilController::class, 'profiles']);
+        Route::resource('/users', UserController::class);
+        Route::resource('/profiles', TipoPerfilController::class);
     });
     Route::get('/me', [AuthController::class, 'me']);
 });

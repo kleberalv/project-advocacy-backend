@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use App\Helpers\Helper;
 use Illuminate\Http\Response;
-use Exception;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -36,7 +35,7 @@ class UserService
      * Valida os dados de entrada do usuário.
      *
      * @param array $data Os dados do usuário a serem validados.
-     * @return \Illuminate\Http\JsonResponse|null A resposta de erro em caso de validação falha.
+     * @return array A resposta de erro em caso de validação falha.
      */
     public function validateUserInput(array $data)
     {
@@ -89,13 +88,13 @@ class UserService
      * @param array $user Os dados do usuário a serem validados e excluídos.
      * @return mixed O usuário excluído.
      *
-     * @throws Exception Se o usuário não for encontrado.
+     * @return array Se o usuário não for encontrado.
      */
     public function validateUserToDelete($user)
     {
         $data = $this->userRepository->getUserById($user);
         if (!$data) {
-            throw new Exception('Usuário não encontrado', 404);
+            return response()->json(['errors' => "Usuário não encontrado"], Response::HTTP_NOT_FOUND);
         }
         return $this->deleteUser($data);
     }
@@ -129,13 +128,15 @@ class UserService
      *
      * @param array $user Os dados do usuário a serem atualizados.
      * @return mixed O usuário atualizado.
+     * 
+     * @return array Se o usuário não for encontrado
      */
     public function updateUser($user)
     {
         $user = Helper::formatCPF($user);
         $userToUpdate = $this->userRepository->getUserByCpf($user);
         if (!$userToUpdate) {
-            throw new \Exception('Usuário não encontrado', 404);
+            return response()->json(['errors' => "Não foi encontrado um usuário com o CPF informado"], Response::HTTP_NOT_FOUND);
         }
         if (isset($user['senha'])) {
             $user = $this->senhaUser($user);
@@ -148,12 +149,14 @@ class UserService
      *
      * @param mixed $user O usuário a ser excluído.
      * @return mixed O usuário excluído.
+     * 
+     * @return array Se o usuário tentar excluir a própia conta
      */
     public function deleteUser($user)
     {
         $usuarioAtual = Auth::user();
         if ($usuarioAtual->id_usuario === $user['id_usuario']) {
-            throw new Exception('Não é possível excluir a sua própia conta de usuário', 403);
+            return response()->json(['errors' => "Não é possível excluir a sua própia conta de usuário"], Response::HTTP_FORBIDDEN);
         }
         return $user = $this->userRepository->deleteUser((object)$user);
     }

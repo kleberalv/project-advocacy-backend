@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Http\Resources\UserCollection;
 use Exception;
 use App\Services\UserService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 
 /**
  * Controlador para gerenciamento de usuários.
@@ -48,9 +50,9 @@ class UserController extends Controller
             return response()->json([
                 'message' => 'Usuário criado com sucesso!',
                 'user' => (new UserCollection([$user]))->toArray(),
-            ], 201);
+            ], Response::HTTP_CREATED);
         } catch (\Exception $e) {
-            throw new Exception($e->getMessage(), 401);
+            throw new Exception($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -69,7 +71,7 @@ class UserController extends Controller
                 'users' => $users,
             ]);
         } catch (Exception $e) {
-            throw new Exception($e->getMessage(), 401);
+            throw new Exception($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -89,12 +91,15 @@ class UserController extends Controller
                 return $validationResponse;
             }
             $user = $this->userService->updateUser($request->all());
+            if ($user instanceof JsonResponse && $user->getStatusCode() !== Response::HTTP_OK) {
+                return $user;
+            }
             return response()->json([
                 'message' => 'Usuário atualizado com sucesso!',
                 'user' => (new UserCollection([$user]))->toArray(),
-            ], 200);
+            ], Response::HTTP_OK);
         } catch (\Exception $e) {
-            throw new Exception($e->getMessage(), 401);
+            throw new Exception($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -106,16 +111,19 @@ class UserController extends Controller
      *
      * @throws Exception Em caso de erro na exclusão do usuário.
      */
-    public function delete(Request $request)
+    public function destroy(Request $request)
     {
         try {
             $user = $this->userService->validateUserToDelete($request->all());
+            if ($user instanceof JsonResponse && $user->getStatusCode() !== Response::HTTP_OK) {
+                return $user;
+            }
             return response()->json([
                 'message' => 'Usuário excluído com sucesso!',
                 'user' => (new UserCollection([$user]))->toArray(),
-            ], 200);
+            ], Response::HTTP_OK);
         } catch (\Exception $e) {
-            throw new Exception($e->getMessage(), 401);
+            throw new Exception($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

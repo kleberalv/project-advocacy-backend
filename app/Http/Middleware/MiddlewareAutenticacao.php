@@ -6,7 +6,6 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Tymon\JWTAuth\Facades\JWTAuth;
-use Tymon\JWTAuth\Exceptions\JWTException;
 
 /**
  * Middleware para autenticação JWT.
@@ -26,9 +25,10 @@ class MiddlewareAutenticacao
     {
         try {
             $user = JWTAuth::parseToken()->authenticate();
-        } catch (JWTException $e) {
-            throw new \Exception('Usuário não autenticado. Por favor, realize o logon na plataforma novamente.', 401);
+            return $next($request);
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-        return $next($request);
+
     }
 }

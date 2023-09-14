@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Exception;
 use App\Services\TipoPerfilService;
+use Illuminate\Http\Response;
 
 /**
  * Controlador para gerenciamento de tipos de perfis de usuário.
@@ -34,12 +35,12 @@ class TipoPerfilController extends Controller
      *
      * @throws Exception Em caso de erro na recuperação dos tipos de perfil.
      */
-    public function profiles()
+    public function index()
     {
         try {
             return $this->tipoPerfilService->profiles();
         } catch (\Exception $e) {
-            throw new Exception($e->getMessage(), 401);
+            throw new Exception($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

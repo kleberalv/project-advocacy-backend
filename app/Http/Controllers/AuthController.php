@@ -6,6 +6,8 @@ use Exception;
 use Illuminate\Http\Request;
 use App\Services\AuthService;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 
 /**
  * Controlador responsável pela autenticação e gerenciamento de usuários.
@@ -45,9 +47,12 @@ class AuthController extends Controller
                 return $validationResponse;
             }
             $user = $this->authService->validateUserToLogin($request->all());
+            if ($user instanceof JsonResponse && $user->getStatusCode() !== Response::HTTP_OK) {
+                return $user;
+            }
             return response()->json($user);
         } catch (\Exception $e) {
-            throw new Exception($e->getMessage(), 401);
+            throw new Exception($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -61,7 +66,7 @@ class AuthController extends Controller
         try {
             return $this->authService->me();
         } catch (\Exception $e) {
-            throw new Exception($e->getMessage(), 401);
+            throw new Exception($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -75,7 +80,7 @@ class AuthController extends Controller
         try {
             return $this->authService->logout();
         } catch (\Exception $e) {
-            throw new Exception($e->getMessage(), 401);
+            throw new Exception($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }
