@@ -1,8 +1,6 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 use Database\Seeders\UsuariosSeeder;
 use Database\Seeders\TipoPerfilSeeder;
 use Database\Seeders\StatusSeeder;
@@ -11,7 +9,7 @@ use Database\Seeders\ProcessoSeeder;
 class DatabaseSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Executa as operações de seeding no banco de dados.
      *
      * @return void
      */

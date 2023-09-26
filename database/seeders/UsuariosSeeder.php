@@ -5,48 +5,53 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Faker\Factory as Faker;
 
 class UsuariosSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Executa as operações de seeding no banco de dados.
      *
      * @return void
      */
     public function run()
     {
         $now = Carbon::now();
+        $faker = Faker::create();
+        $faker->addProvider(new \Faker\Provider\pt_BR\Person($faker));
         DB::table('tab_usuarios')->insert([
-            [
-                'nome' => 'Kleber Alves',
-                'cpf' => '12345678901',
+            'nome' => 'Kleber Alves',
+            'cpf' => '12345678901',
+            'senha' => bcrypt('senha123'),
+            'email' => 'kleber@gmail.com',
+            'dat_nasc' => '1999-07-27',
+            'endereco' => 'Rua Exemplo, 123',
+            'id_perfil' => 1,
+            'created_at' => $now,
+        ]);
+        for ($i = 0; $i < 3; $i++) {
+            DB::table('tab_usuarios')->insert([
+                'nome' => $faker->name,
+                'cpf' => $faker->cpf(false),
                 'senha' => bcrypt('senha123'),
-                'email' => 'kleber@gmail.com',
-                'dat_nasc' => '1999-07-27',
-                'endereco' => 'Rua Exemplo, 123',
-                'id_perfil' => 1,
-                'created_at' => $now,
-            ],
-            [
-                'nome' => 'Edilson Pereira',
-                'cpf' => '14725836900',
-                'senha' => bcrypt('senha789'),
-                'email' => 'pereira@bol.com',
-                'dat_nasc' => '1981-06-19',
-                'endereco' => 'Fortaleza, Ceará',
+                'email' => $faker->unique()->safeEmail,
+                'dat_nasc' => $faker->date('Y-m-d', '2000-01-01'),
+                'endereco' => $faker->address,
                 'id_perfil' => 2,
                 'created_at' => $now,
-            ],
-            [
-                'nome' => 'Maria Santos',
-                'cpf' => '98765432101',
-                'senha' => bcrypt('senha456'),
-                'email' => 'maria@yahoo.com',
-                'dat_nasc' => '1995-05-10',
-                'endereco' => 'Avenida Teste, 456',
+            ]);
+        }
+        for ($i = 0; $i < 3; $i++) {
+            DB::table('tab_usuarios')->insert([
+                'nome' => $faker->name,
+                'cpf' => $faker->cpf(false),
+                'senha' => bcrypt('senha123'),
+                'email' => $faker->unique()->safeEmail,
+                'dat_nasc' => $faker->date('Y-m-d', '2000-01-01'),
+                'endereco' => $faker->address,
                 'id_perfil' => 3,
                 'created_at' => $now,
-            ],
-        ]);
+            ]);
+        }
     }
 }

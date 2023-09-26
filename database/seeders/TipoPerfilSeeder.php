@@ -9,7 +9,7 @@ use Carbon\Carbon;
 class TipoPerfilSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Executa as operações de seeding no banco de dados.
      *
      * @return void
      */

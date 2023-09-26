@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * Executa as migrações.
      */
     public function up(): void
     {
@@ -25,12 +25,10 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes('deleted_at');
         });
-        DB::statement('ALTER TABLE tab_processo ADD CHECK (id_advogado = 2)');
-        DB::statement('ALTER TABLE tab_processo ADD CHECK (id_cliente = 3)');
     }
 
     /**
-     * Reverse the migrations.
+     * Reverte as migrações.
      */
     public function down(): void
     {

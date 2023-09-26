@@ -7,18 +7,18 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * Executa as migrações.
      */
     public function up(): void
     {
         Schema::create('tab_usuarios', function (Blueprint $table) {
             $table->id('id_usuario');
+            $table->unsignedBigInteger('id_perfil');
             $table->string('nome');
             $table->string('cpf')->unique();
             $table->string('senha');
             $table->string('email');
             $table->date('dat_nasc');
-            $table->unsignedBigInteger('id_perfil');
             $table->string('endereco');
             $table->timestamps();
             $table->softDeletes('deleted_at');
@@ -28,7 +28,7 @@ return new class extends Migration
     }
 
     /**
-     * Reverse the migrations.
+     * Reverte as migrações.
      */
     public function down(): void
     {

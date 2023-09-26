@@ -9,7 +9,9 @@ use Illuminate\Database\Seeder;
 class StatusSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Executa as operações de seeding no banco de dados.
+     *
+     * @return void
      */
     public function run(): void
     {
@@ -25,7 +27,6 @@ class StatusSeeder extends Seeder
             ['status' => 'Em Arbitragem', 'descricao' => 'O processo está em arbitragem.', 'created_at' => now()],
             ['status' => 'Pendente de Notificação', 'descricao' => 'O processo está pendente de notificação.', 'created_at' => now()],
         ];
-
         foreach ($statusSeed as $status) {
             DB::table('tab_status')->insert($status);
         }

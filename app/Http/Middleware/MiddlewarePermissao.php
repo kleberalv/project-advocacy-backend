@@ -24,8 +24,8 @@ class MiddlewarePermissao
     {
         try {
             $user = auth()->user();
-            if ($user->id_perfil !== 1) {
-                return response(['errors' => 'Usuário não possui autorização para acessar esta funcionalidade'], Response::HTTP_UNPROCESSABLE_ENTITY);
+            if ($user->id_perfil === 3 && $request->method() !== 'GET') {
+                return response(['errors' => 'Usuário não possui autorização para essa ação'], Response::HTTP_METHOD_NOT_ALLOWED);
             }
             return $next($request);
         } catch (\Exception $e) {

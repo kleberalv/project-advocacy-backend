@@ -82,4 +82,14 @@ class User extends Authenticatable implements JWTSubject
     {
         $this->attributes['senha'] = bcrypt($value);
     }
+
+    /**
+     * Define o relacionamento com a tabela de processos como advogado.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function processos()
+    {
+        return $this->hasMany(Processo::class, 'id_advogado');
+    }
 }
