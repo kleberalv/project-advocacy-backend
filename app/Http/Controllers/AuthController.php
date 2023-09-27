@@ -44,13 +44,24 @@ class AuthController extends Controller
         try {
             $validationResponse = $this->authService->validateFieldsLogin($request->all());
             if ($validationResponse !== null) {
-                return $validationResponse;
+                return response()->json(
+                    [
+                        'message' => $validationResponse['message']
+                    ],
+                    $validationResponse['status']
+                );
             }
-            $user = $this->authService->validateUserToLogin($request->all());
-            if ($user instanceof JsonResponse && $user->getStatusCode() !== Response::HTTP_OK) {
-                return $user;
+            $userResponse = $this->authService->validateUserToLogin($request->all());
+            if ($userResponse instanceof JsonResponse && $userResponse->getStatusCode() !== Response::HTTP_OK) {
+                return $userResponse;
             }
-            return response()->json($user);
+            return response()->json([
+                'user' => $userResponse['user'],
+                "access_token" => $userResponse['access_token']
+            ])->header(
+                'Authorization',
+                'Bearer ' . $userResponse['access_token']
+            );
         } catch (\Exception $e) {
             throw new Exception($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -64,7 +75,13 @@ class AuthController extends Controller
     public function me()
     {
         try {
-            return $this->authService->me();
+            $user = $this->authService->me();
+            return response()->json(
+                [
+                    'user' => $user,
+                ],
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             throw new Exception($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }

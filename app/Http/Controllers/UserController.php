@@ -120,7 +120,6 @@ class UserController extends Controller
             }
             return response()->json([
                 'message' => 'Usuário excluído com sucesso!',
-                'user' => (new UserCollection([$user]))->toArray(),
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
             throw new Exception($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);

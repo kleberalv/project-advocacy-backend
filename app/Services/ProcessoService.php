@@ -36,7 +36,7 @@ class ProcessoService
      *
      * @throws Response Se houver um erro de validação não processável.
      */
-    public function validateProcessInput(array $data)
+    public function validateProcessInput($data)
     {
         $rules = [
             'id_advogado' => 'required|integer',
@@ -78,6 +78,26 @@ class ProcessoService
     }
 
     /**
+     * Valida o processo a ser excluído e, se válido, executa a exclusão.
+     *
+     * @param array $process Os dados do processo a ser validado e excluído.
+     * @return \Illuminate\Http\JsonResponse|null A resposta JSON com erros ou nulo se a operação for bem-sucedida.
+     */
+    public function validateProcessToDelete($process)
+    {
+        $processToDelete = $this->processoRepository->getProcessById($process);
+        if (!$processToDelete) {
+            return response()->json(
+                [
+                    'errors' => "O processo informado não foi encontrado"
+                ],
+                Response::HTTP_NOT_FOUND
+            );
+        }
+        return $this->deleteProcess($processToDelete);
+    }
+
+    /**
      * Obtém a lista de processos com base no perfil do usuário solicitante.
      *
      * @param array $userRequester Os dados do usuário solicitante.
@@ -105,5 +125,36 @@ class ProcessoService
         });
 
         return $processos->values()->toArray();
+    }
+
+    /**
+     * Atualiza um processo existente com os dados fornecidos.
+     *
+     * @param array $process Os dados do processo a serem atualizados.
+     * @return mixed O processo atualizado.
+     */
+    public function updateProcess($process)
+    {
+        $processToUpdate = $this->processoRepository->getProcessById($process);
+        if (!$processToUpdate) {
+            return response()->json(
+                [
+                    'errors' => "O processo informado não foi encontrado"
+                ],
+                Response::HTTP_NOT_FOUND
+            );
+        }
+        return $this->processoRepository->updateProcess($process, $processToUpdate);
+    }
+
+    /**
+     * Exclui um processo existente.
+     *
+     * @param mixed $process O processo a ser excluído.
+     * @return mixed O processo excluído.
+     */
+    public function deleteProcess($process)
+    {
+        return $process = $this->processoRepository->deleteProcess($process);
     }
 }

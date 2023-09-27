@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Services\ProcessoService;
 use App\Http\Controllers\AuthController;
 use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 
 /**
@@ -97,6 +98,59 @@ class ProcessoController extends Controller
             $processos = $this->processoService->getIndex($userRequester);
             return response()->json([
                 'processos' => $processos,
+            ], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            throw new Exception($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Atualiza um processo existente no sistema.
+     *
+     * @param Request $request A requisição HTTP contendo os dados do processo a ser atualizado.
+     * @return \Illuminate\Http\JsonResponse A resposta JSON indicando o sucesso da operação ou erros de validação.
+     *
+     * @throws Exception Se houver um erro interno durante o processamento.
+     */
+    public function update(Request $request)
+    {
+        try {
+            $validationResponse = $this->processoService->validateProcessInput($request->all());
+            if ($validationResponse !== null) {
+                return $validationResponse;
+            }
+            $process = $this->processoService->updateProcess($request->all());
+            if ($process instanceof JsonResponse && $process->getStatusCode() !== Response::HTTP_OK) {
+                return $process;
+            }
+            $process->unsetRelation('advogado');
+            $process->unsetRelation('cliente');
+            return response()->json([
+                'message' => 'Processo atualizado com sucesso!',
+                'processo' => $process,
+            ], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            throw new Exception($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Exclui um processo existente do sistema.
+     *
+     * @param Request $request A requisição HTTP contendo os dados do processo a ser excluído.
+     * @return \Illuminate\Http\JsonResponse A resposta JSON indicando o sucesso da operação ou erros de validação.
+     *
+     * @throws Exception Se houver um erro interno durante o processamento.
+     */
+    public function destroy(Request $request)
+    {
+        try {
+            $process = $this->processoService->validateProcessToDelete($request->all());
+            if ($process instanceof JsonResponse && $process->getStatusCode() !== Response::HTTP_OK) {
+                return $process;
+            }
+            return response()->json([
+                'message' => 'Processo excluído com sucesso!',
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
             throw new Exception($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);

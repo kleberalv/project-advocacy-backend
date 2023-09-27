@@ -37,7 +37,7 @@ class UserService
      * @param array $data Os dados do usuário a serem validados.
      * @return array A resposta de erro em caso de validação falha.
      */
-    public function validateUserInput(array $data)
+    public function validateUserInput($data)
     {
         $data = Helper::formatCPF($data);
         $rules = [
@@ -92,11 +92,16 @@ class UserService
      */
     public function validateUserToDelete($user)
     {
-        $data = $this->userRepository->getUserById($user);
-        if (!$data) {
-            return response()->json(['errors' => "Usuário não encontrado"], Response::HTTP_NOT_FOUND);
+        $UserToDelete = $this->userRepository->getUserById($user);
+        if (!$UserToDelete) {
+            return response()->json(
+                [
+                    'errors' => "Usuário não encontrado"
+                ],
+                Response::HTTP_NOT_FOUND
+            );
         }
-        return $this->deleteUser($data);
+        return $this->deleteUser($UserToDelete);
     }
 
     /**
@@ -136,7 +141,12 @@ class UserService
         $user = Helper::formatCPF($user);
         $userToUpdate = $this->userRepository->getUserByCpf($user);
         if (!$userToUpdate) {
-            return response()->json(['errors' => "Não foi encontrado um usuário com o CPF informado"], Response::HTTP_NOT_FOUND);
+            return response()->json(
+                [
+                    'errors' => "Não foi encontrado um usuário com o CPF informado"
+                ],
+                Response::HTTP_NOT_FOUND
+            );
         }
         if (isset($user['senha'])) {
             $user = $this->senhaUser($user);
@@ -156,7 +166,12 @@ class UserService
     {
         $usuarioAtual = Auth::user();
         if ($usuarioAtual->id_usuario === $user['id_usuario']) {
-            return response()->json(['errors' => "Não é possível excluir a sua própia conta de usuário"], Response::HTTP_FORBIDDEN);
+            return response()->json(
+                [
+                    'errors' => "Não é possível excluir a sua própia conta de usuário"
+                ],
+                Response::HTTP_FORBIDDEN
+            );
         }
         return $user = $this->userRepository->deleteUser((object)$user);
     }

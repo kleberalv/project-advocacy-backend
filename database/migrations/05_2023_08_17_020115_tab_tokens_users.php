@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id('id_token');
             $table->string('tokenable_type');
             $table->unsignedBigInteger('tokenable_id_usuario');
+            $table->unsignedBigInteger('id_perfil_permissions');
             $table->string('name_token');
             $table->string('token', 512)->unique();
-            $table->unsignedBigInteger('id_perfil_permissions');
             $table->timestamp('expires_at')->nullable();
             $table->timestamps();
             $table->softDeletes();

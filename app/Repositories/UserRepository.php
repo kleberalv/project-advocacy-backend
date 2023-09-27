@@ -65,7 +65,7 @@ class UserRepository
      */
     public function getUserById($user)
     {
-        return User::where('id_usuario', $user['id'])->first();
+        return User::where('id_usuario', $user['id_usuario'])->first();
     }
 
     /**
