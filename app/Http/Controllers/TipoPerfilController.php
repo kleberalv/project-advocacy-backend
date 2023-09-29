@@ -38,7 +38,10 @@ class TipoPerfilController extends Controller
     public function index()
     {
         try {
-            return $this->tipoPerfilService->profiles();
+            $profiles = $this->tipoPerfilService->profiles();
+            return response()->json([
+                'profiles' => $profiles['profiles'],
+            ], $profiles['status']);
         } catch (\Exception $e) {
             throw new Exception($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }

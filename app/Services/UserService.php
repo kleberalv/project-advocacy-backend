@@ -2,11 +2,11 @@
 
 namespace App\Services;
 
+use Illuminate\Http\Response;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use App\Helpers\Helper;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -37,12 +37,12 @@ class UserService
      * @param array $data Os dados do usuário a serem validados.
      * @return array A resposta de erro em caso de validação falha.
      */
-    public function validateUserInput($data)
+    public function validateUserInput($filledFields)
     {
-        $data = Helper::formatCPF($data);
+        $filledFields = Helper::formatCPF($filledFields);
         $rules = [
             'nome' => 'required|string|max:255',
-            'cpf' => 'required|string|max:11|unique:tab_usuarios,cpf,' . ($data['id'] ?? 'null') . ',id_usuario',
+            'cpf' => 'required|string|max:11|unique:tab_usuarios,cpf,' . ($filledFields['id'] ?? 'null') . ',id_usuario',
             'senha' => 'string|min:8|max:20',
             'email' => 'required|string|email|max:255',
             'dat_nasc' => 'required|date',
@@ -57,14 +57,14 @@ class UserService
             ],
             'cpf.unique' => 'Este CPF já está cadastrado para outro usuário',
         ];
-        $validator = Validator::make($data, $rules, $customMessages);
+        $validator = Validator::make($filledFields, $rules, $customMessages);
         if ($validator->fails()) {
             $errors = $validator->errors()->all();
             $errorMessage = 'Ocorreu o seguinte erro na operação: ' . implode(', ', $errors);
-
-            return response()->json([
+            return [
                 'message' => $errorMessage,
-            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+                'status' => Response::HTTP_UNPROCESSABLE_ENTITY,
+            ];
         }
         return;
     }
@@ -75,11 +75,11 @@ class UserService
      * @param array $data Os dados do usuário.
      * @return array Os dados do usuário com a senha criptografada.
      */
-    private function senhaUser($data)
+    private function senhaUser($formattedUser)
     {
-        $senha = isset($data['senha']) ? Hash::make($data['senha']) : Hash::make('PrimeiroAcesso2023');
-        $data['senha'] = $senha;
-        return $data;
+        $senha = isset($formattedUser['senha']) ? Hash::make($formattedUser['senha']) : Hash::make('PrimeiroAcesso2023');
+        $formattedUser['senha'] = $senha;
+        return $formattedUser;
     }
 
     /**
@@ -92,40 +92,46 @@ class UserService
      */
     public function validateUserToDelete($user)
     {
-        $UserToDelete = $this->userRepository->getUserById($user);
-        if (!$UserToDelete) {
-            return response()->json(
-                [
-                    'errors' => "Usuário não encontrado"
-                ],
-                Response::HTTP_NOT_FOUND
-            );
+        $userToDelete = $this->userRepository->getUserById($user);
+        if (!$userToDelete) {
+            return [
+                'message' => 'Usuário não encontrado',
+                'status' => Response::HTTP_NOT_FOUND,
+            ];
         }
-        return $this->deleteUser($UserToDelete);
+        $this->deleteUser($userToDelete);
+        return;
     }
 
     /**
      * Retorna a lista de usuários.
      *
-     * @return \Illuminate\Database\Eloquent\Collection A lista de usuários.
+     * @return array A lista de usuários e o status da resposta.
      */
     public function getIndex()
     {
         $users = $this->userRepository->getIndex();
-        return $users;
+        return [
+            'users' => $users,
+            'status' => Response::HTTP_OK
+        ];
     }
 
     /**
      * Cria um novo usuário.
      *
      * @param array $user Os dados do novo usuário.
-     * @return mixed O usuário criado.
+     * @return array A mensagem de sucesso e o status da resposta.
      */
-    public function createUser($user)
+    public function createUser($request)
     {
-        $data = Helper::formatCPF($user);
-        $dados = $this->senhaUser($data);
-        return $this->userRepository->createUser($dados);
+        $formattedUser  = Helper::formatCPF($request);
+        $userToCreate = $this->senhaUser($formattedUser);
+        $this->userRepository->createUser($userToCreate);
+        return [
+            'message' => 'Usuário criado com sucesso!',
+            'status' => Response::HTTP_CREATED
+        ];
     }
 
     /**
@@ -134,45 +140,46 @@ class UserService
      * @param array $user Os dados do usuário a serem atualizados.
      * @return mixed O usuário atualizado.
      * 
-     * @return array Se o usuário não for encontrado
+     * @return array Se o usuário não for encontrado.
      */
-    public function updateUser($user)
+    public function updateUser($request)
     {
-        $user = Helper::formatCPF($user);
-        $userToUpdate = $this->userRepository->getUserByCpf($user);
+        $request = Helper::formatCPF($request);
+        $userToUpdate = $this->userRepository->getUserByCpf($request);
         if (!$userToUpdate) {
-            return response()->json(
-                [
-                    'errors' => "Não foi encontrado um usuário com o CPF informado"
-                ],
-                Response::HTTP_NOT_FOUND
-            );
+            return [
+                'message' => 'Não foi encontrado um usuário com o CPF informado',
+                'status' => Response::HTTP_NOT_FOUND,
+            ];
         }
-        if (isset($user['senha'])) {
-            $user = $this->senhaUser($user);
+        if (isset($request['senha'])) {
+            $request = $this->senhaUser($request);
         }
-        return $this->userRepository->updateUser($user, $userToUpdate);
+        $this->userRepository->updateUser($request, $userToUpdate);
+        return;
     }
 
     /**
      * Exclui logicamente um usuário.
      *
      * @param mixed $user O usuário a ser excluído.
-     * @return mixed O usuário excluído.
+     * @return array A mensagem de sucesso ou erro e o status da resposta.
      * 
-     * @return array Se o usuário tentar excluir a própia conta
+     * @return array Se o usuário tentar excluir a própia conta.
      */
     public function deleteUser($user)
     {
         $usuarioAtual = Auth::user();
         if ($usuarioAtual->id_usuario === $user['id_usuario']) {
-            return response()->json(
-                [
-                    'errors' => "Não é possível excluir a sua própia conta de usuário"
-                ],
-                Response::HTTP_FORBIDDEN
-            );
+            return [
+                'message' => 'Não é possível excluir a sua própria conta de usuário',
+                'status' => Response::HTTP_FORBIDDEN,
+            ];
         }
-        return $user = $this->userRepository->deleteUser((object)$user);
+        $this->userRepository->deleteUser((object)$user);
+        return [
+            'message' => 'Usuário excluído com sucesso!',
+            'status' => Response::HTTP_OK
+        ];
     }
 }

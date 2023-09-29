@@ -12,20 +12,17 @@ class UserCollection extends Collection
     /**
      * Transforma a coleção de recursos em um array.
      *
-     * @return array<int|string, mixed> O array contendo os recursos de usuário transformados.
+     * @return array O array contendo os recursos de usuário transformados.
      */
     public function toArray()
     {
         return $this->map(function ($user) {
-            return [
-                'id_usuario' => $user->id_usuario,
-                'nome' => $user->nome,
-                'cpf' => $user->cpf,
-                'email' => $user->email,
-                'dat_nasc' => $user->dat_nasc,
-                'id_perfil' => $user->id_perfil,
-                'endereco' => $user->endereco,
-            ];
+            $userAttributes = $user->getAttributes();
+            $filteredAttributes = array_filter($userAttributes, function ($value) {
+                return !is_null($value);
+            });
+            $userCollection = array_merge($filteredAttributes);
+            return $userCollection;
         })->all();
     }
 }

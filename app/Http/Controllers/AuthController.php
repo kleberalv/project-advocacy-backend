@@ -6,7 +6,6 @@ use Exception;
 use Illuminate\Http\Request;
 use App\Services\AuthService;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 
 /**
@@ -42,27 +41,35 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         try {
-            $validationResponse = $this->authService->validateFieldsLogin($request->all());
-            if ($validationResponse !== null) {
-                return response()->json(
-                    [
-                        'message' => $validationResponse['message']
-                    ],
-                    $validationResponse['status']
-                );
+            $validateFieldsOrFail = $this->authService->validateFieldsLogin($request->all());
+            if ($validateFieldsOrFail !== null) {
+                return response()->json([
+                    'message' => $validateFieldsOrFail['message'],
+                ], $validateFieldsOrFail['status']);
             }
-            $userResponse = $this->authService->validateUserToLogin($request->all());
-            if ($userResponse instanceof JsonResponse && $userResponse->getStatusCode() !== Response::HTTP_OK) {
-                return $userResponse;
+            $validateUserToLoginOrFail = $this->authService->validateUserToLogin($request->all());
+            if ($validateUserToLoginOrFail !== null) {
+                return response()->json([
+                    'message' => $validateUserToLoginOrFail['message'],
+                ], $validateUserToLoginOrFail['status']);
             }
-            return response()->json([
-                'user' => $userResponse['user'],
-                "access_token" => $userResponse['access_token']
-            ])->header(
+            $authenticateUser = $this->authService->login($request->all());
+            return response()->json(
+                [
+                    'user' => $authenticateUser['user'],
+                    'access_token' => $authenticateUser['access_token']
+                ],
+                $authenticateUser['status']
+            )->header(
                 'Authorization',
-                'Bearer ' . $userResponse['access_token']
+                'Bearer ' . $authenticateUser['access_token']
             );
         } catch (\Exception $e) {
+            if ($e instanceof \Illuminate\Database\QueryException) {
+                return response()->json([
+                    'message' => 'Ocorreu um erro interno no servidor. Por favor, tente novamente mais tarde',
+                ], Response::HTTP_INTERNAL_SERVER_ERROR);
+            }
             throw new Exception($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -71,17 +78,16 @@ class AuthController extends Controller
      * Retorna os dados do usuário autenticado.
      *
      * @return \Illuminate\Http\JsonResponse Os dados do usuário autenticado.
+     *
+     * @throws Exception Em caso de erro ao recuperar os dados do usuário autenticado.
      */
     public function me()
     {
         try {
-            $user = $this->authService->me();
-            return response()->json(
-                [
-                    'user' => $user,
-                ],
-                Response::HTTP_OK
-            );
+            $myUser = $this->authService->me();
+            return response()->json([
+                'user' => $myUser['user'],
+            ], $myUser['status']);
         } catch (\Exception $e) {
             throw new Exception($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -91,11 +97,16 @@ class AuthController extends Controller
      * Realiza o processo de logout do usuário autenticado.
      *
      * @return \Illuminate\Http\JsonResponse A mensagem de sucesso no logout.
+     *
+     * @throws Exception Em caso de erro durante o logout.
      */
     public function logout()
     {
         try {
-            return $this->authService->logout();
+            $userToLogout = $this->authService->logout();
+            return response()->json([
+                'message' => $userToLogout['message'],
+            ], $userToLogout['status']);
         } catch (\Exception $e) {
             throw new Exception($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }

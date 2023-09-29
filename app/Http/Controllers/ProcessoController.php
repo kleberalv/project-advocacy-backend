@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use Illuminate\Http\Request;
 use App\Services\ProcessoService;
 use App\Http\Controllers\AuthController;
-use Exception;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 
 /**
@@ -51,17 +50,16 @@ class ProcessoController extends Controller
     public function store(Request $request)
     {
         try {
-            $validationResponse = $this->processoService->validateProcessInput($request->all());
-            if ($validationResponse !== null) {
-                return $validationResponse;
+            $validateFieldsOrFail = $this->processoService->validateProcessInput($request->all());
+            if ($validateFieldsOrFail !== null) {
+                return response()->json([
+                    'message' => $validateFieldsOrFail['message'],
+                ], $validateFieldsOrFail['status']);
             }
             $process = $this->processoService->createProcess($request->all());
-            $process->unsetRelation('advogado');
-            $process->unsetRelation('cliente');
             return response()->json([
-                'message' => 'Processo adicionado com sucesso!',
-                'processo' => $process,
-            ], Response::HTTP_CREATED);
+                'message' => $process['message'],
+            ], $process['status']);
         } catch (\Exception $e) {
             throw new Exception($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -97,8 +95,8 @@ class ProcessoController extends Controller
             $userRequester = $this->getIdPerfilRequester();
             $processos = $this->processoService->getIndex($userRequester);
             return response()->json([
-                'processos' => $processos,
-            ], Response::HTTP_OK);
+                'process' => $processos['process'],
+            ], $processos['status']);
         } catch (\Exception $e) {
             throw new Exception($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -115,19 +113,20 @@ class ProcessoController extends Controller
     public function update(Request $request)
     {
         try {
-            $validationResponse = $this->processoService->validateProcessInput($request->all());
-            if ($validationResponse !== null) {
-                return $validationResponse;
+            $validateFieldsOrFail = $this->processoService->validateProcessInput($request->all());
+            if ($validateFieldsOrFail !== null) {
+                return response()->json([
+                    'message' => $validateFieldsOrFail['message'],
+                ], $validateFieldsOrFail['status']);
             }
             $process = $this->processoService->updateProcess($request->all());
-            if ($process instanceof JsonResponse && $process->getStatusCode() !== Response::HTTP_OK) {
-                return $process;
+            if ($process !== null) {
+                return response()->json([
+                    'message' => $process['message'],
+                ], $process['status']);
             }
-            $process->unsetRelation('advogado');
-            $process->unsetRelation('cliente');
             return response()->json([
                 'message' => 'Processo atualizado com sucesso!',
-                'processo' => $process,
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
             throw new Exception($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -146,8 +145,10 @@ class ProcessoController extends Controller
     {
         try {
             $process = $this->processoService->validateProcessToDelete($request->all());
-            if ($process instanceof JsonResponse && $process->getStatusCode() !== Response::HTTP_OK) {
-                return $process;
+            if ($process !== null) {
+                return response()->json([
+                    'message' => $process['message'],
+                ], $process['status']);
             }
             return response()->json([
                 'message' => 'Processo excluído com sucesso!',

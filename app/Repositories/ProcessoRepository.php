@@ -38,8 +38,7 @@ class ProcessoRepository
      */
     public function getIndex()
     {
-        $processos = Processo::whereNull('deleted_at')->with('advogado', 'cliente', 'status')->get();
-        return $processos;
+        return Processo::whereNull('deleted_at')->with('advogado', 'cliente', 'status')->get();
     }
 
     /**

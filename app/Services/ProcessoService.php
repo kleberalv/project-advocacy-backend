@@ -31,12 +31,12 @@ class ProcessoService
     /**
      * Valida os dados de entrada para criar um novo processo.
      *
-     * @param array $data Os dados a serem validados.
-     * @return \Illuminate\Http\JsonResponse|null A resposta JSON com erros de validação ou nulo se a validação for bem-sucedida.
+     * @param array $filledFields Os dados a serem validados.
+     * @return array|null A resposta JSON com erros de validação ou nulo se a validação for bem-sucedida.
      *
      * @throws Response Se houver um erro de validação não processável.
      */
-    public function validateProcessInput($data)
+    public function validateProcessInput($filledFields)
     {
         $rules = [
             'id_advogado' => 'required|integer',
@@ -51,48 +51,47 @@ class ProcessoService
                 'max' => 'O campo :attribute deve conter no máximo :max caracteres',
             ],
         ];
-
-        $validator = Validator::make($data, $rules, $customMessages);
-
+        $validator = Validator::make($filledFields, $rules, $customMessages);
         if ($validator->fails()) {
             $errors = $validator->errors()->all();
             $errorMessage = 'Ocorreu o seguinte erro na operação: ' . implode(', ', $errors);
-
-            return response()->json([
+            return [
                 'message' => $errorMessage,
-            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+                'status' => Response::HTTP_UNPROCESSABLE_ENTITY,
+            ];
         }
-
         return null;
     }
 
     /**
      * Cria um novo processo com os dados fornecidos.
      *
-     * @param array $dados Os dados do processo a serem criados.
-     * @return mixed O processo criado.
+     * @param array $request Os dados do processo a serem criados.
+     * @return array A mensagem de sucesso e o status da resposta.
      */
-    public function createProcess($dados)
+    public function createProcess($request)
     {
-        return $this->processoRepository->createProcess($dados);
+        $this->processoRepository->createProcess($request);
+        return [
+            'message' => 'Processo adicionado com sucesso!',
+            'status' => Response::HTTP_CREATED,
+        ];
     }
 
     /**
      * Valida o processo a ser excluído e, se válido, executa a exclusão.
      *
      * @param array $process Os dados do processo a ser validado e excluído.
-     * @return \Illuminate\Http\JsonResponse|null A resposta JSON com erros ou nulo se a operação for bem-sucedida.
+     * @return array|null A resposta JSON com erros ou nulo se a operação for bem-sucedida.
      */
     public function validateProcessToDelete($process)
     {
         $processToDelete = $this->processoRepository->getProcessById($process);
         if (!$processToDelete) {
-            return response()->json(
-                [
-                    'errors' => "O processo informado não foi encontrado"
-                ],
-                Response::HTTP_NOT_FOUND
-            );
+            return [
+                'message' => 'O processo informado não foi encontrado',
+                'status' => Response::HTTP_NOT_FOUND,
+            ];
         }
         return $this->deleteProcess($processToDelete);
     }
@@ -106,7 +105,6 @@ class ProcessoService
     public function getIndex($userRequester)
     {
         $processos = $this->processoRepository->getIndex();
-
         if ($userRequester['id_perfil'] === 2) {
             $processos = $processos->filter(function ($processo) use ($userRequester) {
                 return $processo->advogado->id_usuario === $userRequester['id_usuario'];
@@ -116,45 +114,46 @@ class ProcessoService
                 return $processo->cliente->id_usuario === $userRequester['id_usuario'];
             });
         }
-
         $processos = $processos->map(function ($processo) {
             $processo->advogado->makeHidden(['senha', 'created_at', 'updated_at', 'deleted_at']);
             $processo->cliente->makeHidden(['senha', 'created_at', 'updated_at', 'deleted_at']);
             $processo->status->makeHidden(['created_at', 'updated_at', 'deleted_at']);
             return $processo;
         });
-
-        return $processos->values()->toArray();
+        return [
+            'process' => $processos->values()->toArray(),
+            'status' => Response::HTTP_OK
+        ];
     }
 
     /**
      * Atualiza um processo existente com os dados fornecidos.
      *
-     * @param array $process Os dados do processo a serem atualizados.
-     * @return mixed O processo atualizado.
+     * @param array $request Os dados do processo a serem atualizados.
+     * @return array|null A mensagem de sucesso e o status da resposta.
      */
-    public function updateProcess($process)
+    public function updateProcess($request)
     {
-        $processToUpdate = $this->processoRepository->getProcessById($process);
+        $processToUpdate = $this->processoRepository->getProcessById($request);
         if (!$processToUpdate) {
-            return response()->json(
-                [
-                    'errors' => "O processo informado não foi encontrado"
-                ],
-                Response::HTTP_NOT_FOUND
-            );
+            return [
+                'message' => "O processo informado não foi encontrado",
+                'status' => Response::HTTP_UNPROCESSABLE_ENTITY,
+            ];
         }
-        return $this->processoRepository->updateProcess($process, $processToUpdate);
+        $this->processoRepository->updateProcess($request, $processToUpdate);
+        return null;
     }
 
     /**
      * Exclui um processo existente.
      *
      * @param mixed $process O processo a ser excluído.
-     * @return mixed O processo excluído.
+     * @return array|null A mensagem de sucesso e o status da resposta.
      */
     public function deleteProcess($process)
     {
-        return $process = $this->processoRepository->deleteProcess($process);
+        $this->processoRepository->deleteProcess($process);
+        return null;
     }
 }

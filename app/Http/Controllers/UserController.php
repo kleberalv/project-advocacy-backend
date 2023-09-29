@@ -3,10 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Resources\UserCollection;
 use Exception;
 use App\Services\UserService;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 
 /**
@@ -42,15 +40,16 @@ class UserController extends Controller
     public function store(Request $request)
     {
         try {
-            $validationResponse = $this->userService->validateUserInput($request->all());
-            if ($validationResponse !== null) {
-                return $validationResponse;
+            $validateFieldsOrFail = $this->userService->validateUserInput($request->all());
+            if ($validateFieldsOrFail !== null) {
+                return response()->json([
+                    'message' => $validateFieldsOrFail['message'],
+                ], $validateFieldsOrFail['status']);
             }
-            $user = $this->userService->createUser($request->all());
+            $createUser = $this->userService->createUser($request->all());
             return response()->json([
-                'message' => 'Usuário criado com sucesso!',
-                'user' => (new UserCollection([$user]))->toArray(),
-            ], Response::HTTP_CREATED);
+                'message' => $createUser['message'],
+            ], $createUser['status']);
         } catch (\Exception $e) {
             throw new Exception($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -68,8 +67,8 @@ class UserController extends Controller
         try {
             $users = $this->userService->getIndex();
             return response()->json([
-                'users' => $users,
-            ]);
+                'users' => $users['users'],
+            ], $users['status']);
         } catch (Exception $e) {
             throw new Exception($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -86,17 +85,20 @@ class UserController extends Controller
     public function update(Request $request)
     {
         try {
-            $validationResponse = $this->userService->validateUserInput($request->all());
-            if ($validationResponse !== null) {
-                return $validationResponse;
+            $validateFieldsOrFail = $this->userService->validateUserInput($request->all());
+            if ($validateFieldsOrFail !== null) {
+                return response()->json([
+                    'message' => $validateFieldsOrFail['message'],
+                ], $validateFieldsOrFail['status']);
             }
-            $user = $this->userService->updateUser($request->all());
-            if ($user instanceof JsonResponse && $user->getStatusCode() !== Response::HTTP_OK) {
-                return $user;
+            $updateUserOrFail = $this->userService->updateUser($request->all());
+            if ($updateUserOrFail !== null) {
+                return response()->json([
+                    'message' => $updateUserOrFail['message'],
+                ], $updateUserOrFail['status']);
             }
             return response()->json([
                 'message' => 'Usuário atualizado com sucesso!',
-                'user' => (new UserCollection([$user]))->toArray(),
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
             throw new Exception($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -114,9 +116,11 @@ class UserController extends Controller
     public function destroy(Request $request)
     {
         try {
-            $user = $this->userService->validateUserToDelete($request->all());
-            if ($user instanceof JsonResponse && $user->getStatusCode() !== Response::HTTP_OK) {
-                return $user;
+            $validateUserToDeleteOrFail = $this->userService->validateUserToDelete($request->all());
+            if ($validateUserToDeleteOrFail !== null) {
+                return response()->json([
+                    'message' => $validateUserToDeleteOrFail['message'],
+                ], $validateUserToDeleteOrFail['status']);
             }
             return response()->json([
                 'message' => 'Usuário excluído com sucesso!',

@@ -12,11 +12,10 @@ class TipoPerfilRepository
     /**
      * Retorna os tipos de perfil.
      *
-     * @return \Illuminate\Http\JsonResponse Os tipos de perfil.
+     * @return \Illuminate\Database\Eloquent\Collection A coleção contendo os tipos de perfil.
      */
     public function profiles()
     {
-        $tiposPerfil = TipoPerfil::all();
-        return response()->json($tiposPerfil, 200);
+        return TipoPerfil::all();
     }
 }

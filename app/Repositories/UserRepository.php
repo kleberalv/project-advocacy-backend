@@ -19,7 +19,8 @@ class UserRepository
      */
     public function login($userToAuthenticate)
     {
-        return User::where('cpf', $userToAuthenticate['cpf'])->first();
+        return User::select('id_usuario', 'id_perfil', 'nome')
+            ->where('cpf', $userToAuthenticate['cpf'])->first();
     }
 
     /**
@@ -42,7 +43,7 @@ class UserRepository
     }
 
     /**
-     * Regista o logout do usuário, excluindo logicamente o token do usuário.
+     * Registra o logout do usuário, excluindo logicamente o token do usuário.
      *
      * @param User $user O usuário para o qual o logout está sendo realizado.
      * @return void
@@ -80,14 +81,15 @@ class UserRepository
     }
 
     /**
-     * Retorna a lista de usuários.
+     * Retorna a lista de usuários, excluindo o usuário atual.
      *
      * @return \Illuminate\Database\Eloquent\Collection A lista de usuários.
      */
     public function getIndex()
     {
         $usuarioAtual = Auth::user();
-        return User::whereNull('deleted_at')
+        return User::select('id_usuario', 'id_perfil', 'nome', 'cpf', 'email', 'dat_nasc', 'endereco')
+            ->whereNull('deleted_at')
             ->where('id_usuario', '!=', $usuarioAtual->id_usuario)
             ->get();
     }
@@ -107,6 +109,7 @@ class UserRepository
      * Atualiza um usuário existente.
      *
      * @param array $user Os dados do usuário a serem atualizados.
+     * @param User $userToUpdate O usuário a ser atualizado.
      * @return User O usuário atualizado.
      */
     public function updateUser($user, $userToUpdate)

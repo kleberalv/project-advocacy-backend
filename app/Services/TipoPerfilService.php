@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Http\Response;
 use App\Repositories\TipoPerfilRepository;
 
 /**
@@ -29,10 +30,14 @@ class TipoPerfilService
     /**
      * Retorna os tipos de perfil.
      *
-     * @return \Illuminate\Http\JsonResponse Os tipos de perfil.
+     * @return array As informações dos tipos de perfil e o status da resposta.
      */
     public function profiles()
     {
-        return $this->tipoPerfilRepository->profiles();
+        $profiles = $this->tipoPerfilRepository->profiles();
+        return [
+            'profiles' => $profiles,
+            'status' => Response::HTTP_OK
+        ];
     }
 }

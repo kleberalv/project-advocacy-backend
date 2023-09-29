@@ -34,12 +34,12 @@ class AuthService
     /**
      * Valida os campos necessários para o login.
      *
-     * @param array $data Os dados de entrada para validação.
-     * @return array A resposta de erro em caso de validação falha.
+     * @param array $filledFields Os dados de entrada para validação.
+     * @return array|null A resposta de erro em caso de validação falha.
      */
-    public function validateFieldsLogin($data)
+    public function validateFieldsLogin($filledFields)
     {
-        $data = Helper::formatCPF($data);
+        $filledFields = Helper::formatCPF($filledFields);
         $rules = [
             'cpf' => 'required|string|max:11',
             'senha' => 'required|string|max:20'
@@ -50,86 +50,76 @@ class AuthService
             'cpf.max' => 'O campo CPF deve ter no máximo 11 caracteres.',
             'senha.max' => 'O campo senha deve ter no máximo 20 caracteres.'
         ];
-        $validator = Validator::make($data, $rules, $customMessages);
+        $validator = Validator::make($filledFields, $rules, $customMessages);
         if ($validator->fails()) {
-            return response(
-                [
-                    'errors' => $validator->errors()->all()
-                ],
-                Response::HTTP_UNPROCESSABLE_ENTITY
-            );
+            $errors = $validator->errors()->all();
+            $errorMessage = 'Ocorreu o seguinte erro na operação: ' . implode(', ', $errors);
+            return [
+                'message' => $errorMessage,
+                'status' => Response::HTTP_UNPROCESSABLE_ENTITY,
+            ];
         }
-        return;
+        return null;
     }
 
     /**
      * Valida as credenciais do usuário para o enviar a função de login.
      *
-     * @param array $userToAuthenticate Os dados do usuário para autenticação, incluindo CPF e senha.
-     * @return array Os dados do usuário para ser autenticado.
-     *
-     * Retorna um array com os dados do usuário autenticado se as credenciais forem válidas.
-     * Retorna uma resposta JSON com erro e código de status apropriado se:
-     *   - O usuário com o CPF fornecido não for encontrado.
-     *   - A senha fornecida estiver incorreta.
-     *   - O usuário estiver desativado.
+     * @param array $filledFields Os dados do usuário para autenticação, incluindo CPF e senha.
+     * @return array|null Os dados do usuário para ser autenticado ou resposta de erro.
      */
-    public function validateUserToLogin($userToAuthenticate)
+    public function validateUserToLogin($filledFields)
     {
-        $userToAuthenticate = Helper::formatCPF($userToAuthenticate);
-        $user = $this->userRepository->getUserByCpf($userToAuthenticate);
+        $filledFields = Helper::formatCPF($filledFields);
+        $user = $this->userRepository->getUserByCpf($filledFields);
         if (!$user) {
-            return response()->json(
-                [
-                    'errors' => "Não foi encontrado um usuário com o CPF informado"
-                ],
-                Response::HTTP_NOT_FOUND
-            );
+            return [
+                'message' => 'Não foi encontrado um usuário com o CPF informado',
+                'status' => Response::HTTP_NOT_FOUND,
+            ];
         }
-        if (!Hash::check($userToAuthenticate['senha'], $user->senha)) {
-            return response()->json(
-                [
-                    'errors' => "CPF ou senha incorretos. Por favor, verifique e tente novamente"
-                ],
-                Response::HTTP_UNAUTHORIZED
-            );
+        if (!Hash::check($filledFields['senha'], $user->senha)) {
+            return [
+                'message' => 'CPF ou senha incorretos. Por favor, verifique e tente novamente',
+                'status' => Response::HTTP_NOT_FOUND,
+            ];
         }
         if ($user && $user->deleted_at !== null) {
-            return response()->json(
-                [
-                    'errors' => "Este usuário está desativado"
-                ],
-                Response::HTTP_UNPROCESSABLE_ENTITY
-            );
+            return [
+                'message' => 'Este usuário está desativado',
+                'status' => Response::HTTP_NOT_FOUND,
+            ];
         }
-        return $this->login($userToAuthenticate);
+        return null;
     }
 
     /**
      * Retorna informações sobre o usuário autenticado.
      *
-     * @return \Illuminate\Http\JsonResponse As informações do usuário autenticado.
+     * @return array As informações do usuário autenticado.
      */
     public function me()
     {
-        $user = auth()->user();
-        return $userCollection = new UserCollection([$user]);
+        $userCollection = new UserCollection([auth()->user()]);
+        return [
+            'user' => $userCollection->toArray(),
+            'status' => Response::HTTP_OK
+        ];
     }
 
     /**
      * Realiza o login do usuário.
      *
      * @param array $userToAuthenticate Os dados do usuário para autenticação.
-     * @return array Os dados do usuário autenticado e o token de acesso.
-     *
-     * @return array Se o usuário não for encontrado ou a senha estiver incorreta.
+     * @return array|null Os dados do usuário autenticado e o token de acesso ou resposta de erro.
      */
     public function login($userToAuthenticate)
     {
-        $data = $this->userRepository->login($userToAuthenticate);
-        $token = auth()->login($data);
-        $this->userRepository->setTokenUserLogin($data, $token);
-        $userCollection = new UserCollection([$data]);
+        $userToAuthenticate = Helper::formatCPF($userToAuthenticate);
+        $user = $this->userRepository->login($userToAuthenticate);
+        $token = auth()->login($user);
+        $this->userRepository->setTokenUserLogin($user, $token);
+        $userCollection = new UserCollection([$user]);
         return [
             'user' => $userCollection->toArray(),
             'access_token' => $token,
@@ -140,17 +130,15 @@ class AuthService
     /**
      * Realiza o logout do usuário autenticado.
      *
-     * @return \Illuminate\Http\JsonResponse A resposta de sucesso do logout.
+     * @return array A resposta de sucesso do logout.
      */
     public function logout()
     {
         $user = auth()->user();
         $this->userRepository->setTokenUserLogout($user);
-        return response()->json(
-            [
-                'message' => 'Usuário deslogado com sucesso'
-            ],
-            Response::HTTP_OK
-        );
+        return [
+            'message' => 'Usuário deslogado com sucesso',
+            'status' => Response::HTTP_OK,
+        ];
     }
 }
