@@ -19,9 +19,9 @@ return new class extends Migration
             $table->unsignedBigInteger('id_cliente');
             $table->foreign('id_cliente')->references('id_usuario')->on('tab_usuarios');
             $table->string('num_processo_sei');
-            $table->unsignedBigInteger('id_status')->nullable();
+            $table->unsignedBigInteger('id_status');
             $table->foreign('id_status')->references('id_status')->on('tab_status');
-            $table->text('observacao')->nullable();
+            $table->string('observacao')->nullable();
             $table->timestamps();
             $table->softDeletes('deleted_at');
         });

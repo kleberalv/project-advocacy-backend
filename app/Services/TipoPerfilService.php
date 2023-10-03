@@ -32,7 +32,7 @@ class TipoPerfilService
      *
      * @return array As informações dos tipos de perfil e o status da resposta.
      */
-    public function profiles()
+    public function getProfiles()
     {
         $profiles = $this->tipoPerfilRepository->profiles();
         return [

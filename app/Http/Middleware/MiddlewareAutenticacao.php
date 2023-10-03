@@ -26,12 +26,12 @@ class MiddlewareAutenticacao
     {
         try {
             if (!JWTAuth::getToken()) {
-                return response(['errors' => 'Token de autenticação ausente. Realize o login novamente'], Response::HTTP_METHOD_NOT_ALLOWED);
+                return response(['errors' => 'Token de autenticação ausente. Realize o login novamente'], Response::HTTP_UNAUTHORIZED);
             }
             try {
                 JWTAuth::parseToken()->authenticate();
             } catch (TokenExpiredException $e) {
-                return response(['errors' => 'Token de autenticação expirado. Por favor, realize o login novamente'], Response::HTTP_METHOD_NOT_ALLOWED);
+                return response(['errors' => 'Token de autenticação expirado. Por favor, realize o login novamente'], Response::HTTP_UNAUTHORIZED);
             }
             return $next($request);
         } catch (\Exception $e) {

@@ -74,6 +74,44 @@ class UserController extends Controller
         }
     }
 
+ /**
+     * Retorna a lista de advogados.
+     *
+     * @return \Illuminate\Http\JsonResponse A lista de advogados.
+     *
+     * @throws Exception Em caso de erro na recuperação da lista de advogados.
+     */
+    public function indexLawyer()
+    {
+        try {
+            $lawyer = $this->userService->GetLawyer();
+            return response()->json([
+                'lawyer' => $lawyer['lawyer'],
+            ], $lawyer['status']);
+        } catch (\Exception $e) {
+            throw new Exception($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Retorna a lista de clientes.
+     *
+     * @return \Illuminate\Http\JsonResponse A lista de clientes.
+     *
+     * @throws Exception Em caso de erro na recuperação da lista de clientes.
+     */
+    public function indexClient()
+    {
+        try {
+            $client = $this->userService->GetClient();
+            return response()->json([
+                'client' => $client['client'],
+            ], $client['status']);
+        } catch (\Exception $e) {
+            throw new Exception($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
     /**
      * Atualiza um usuário existente.
      *

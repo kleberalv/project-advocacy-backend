@@ -38,7 +38,7 @@ class TipoPerfilController extends Controller
     public function index()
     {
         try {
-            $profiles = $this->tipoPerfilService->profiles();
+            $profiles = $this->tipoPerfilService->getProfiles();
             return response()->json([
                 'profiles' => $profiles['profiles'],
             ], $profiles['status']);

@@ -34,7 +34,7 @@ class UserService
     /**
      * Valida os dados de entrada do usuário.
      *
-     * @param array $data Os dados do usuário a serem validados.
+     * @param array $filledFields Os dados do usuário a serem validados.
      * @return array A resposta de erro em caso de validação falha.
      */
     public function validateUserInput($filledFields)
@@ -60,7 +60,15 @@ class UserService
         $validator = Validator::make($filledFields, $rules, $customMessages);
         if ($validator->fails()) {
             $errors = $validator->errors()->all();
-            $errorMessage = 'Ocorreu o seguinte erro na operação: ' . implode(', ', $errors);
+            $errorMessage = 'Ocorreu o seguinte erro na operação: ';
+            foreach ($errors as $index => $error) {
+                $errorMessage .= $error;
+                if ($index < count($errors) - 1) {
+                    $errorMessage .= ', ';
+                } else {
+                    $errorMessage .= '.';
+                }
+            }
             return [
                 'message' => $errorMessage,
                 'status' => Response::HTTP_UNPROCESSABLE_ENTITY,
@@ -113,6 +121,34 @@ class UserService
         $users = $this->userRepository->getIndex();
         return [
             'users' => $users,
+            'status' => Response::HTTP_OK
+        ];
+    }
+
+    /**
+     * Retorna a lista de advogados.
+     *
+     * @return array A lista de advogados e o status da resposta.
+     */
+    public function getLawyer()
+    {
+        $lawyer = $this->userRepository->getLawyer();
+        return [
+            'lawyer' => $lawyer,
+            'status' => Response::HTTP_OK
+        ];
+    }
+
+    /**
+     * Retorna a lista de clientes.
+     *
+     * @return array A lista de clientes e o status da resposta.
+     */
+    public function getClient()
+    {
+        $client = $this->userRepository->getClient();
+        return [
+            'client' => $client,
             'status' => Response::HTTP_OK
         ];
     }

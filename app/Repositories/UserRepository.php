@@ -95,6 +95,32 @@ class UserRepository
     }
 
     /**
+     * Retorna a lista de advogados.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection A lista de advogados ativos.
+     */
+    public function getLawyer()
+    {
+        return User::select('id_usuario', 'id_perfil', 'nome')
+            ->whereNull('deleted_at')
+            ->where('id_perfil', '2')
+            ->get();
+    }
+
+    /**
+     * Retorna a lista de clientes.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection A lista de clientes ativos.
+     */
+    public function getClient()
+    {
+        return User::select('id_usuario', 'id_perfil', 'nome')
+            ->whereNull('deleted_at')
+            ->where('id_perfil', '3')
+            ->get();
+    }
+
+    /**
      * Cria um novo usuário.
      *
      * @param array $user Os dados do novo usuário.

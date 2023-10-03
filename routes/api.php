@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\TipoPerfilController;
 use App\Http\Controllers\ProcessoController;
+use App\Http\Controllers\StatusController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,6 +25,9 @@ Route::group(['middleware' => 'autenticacao'], function () {
         Route::resource('/users', UserController::class);
         Route::resource('/profiles', TipoPerfilController::class);
         Route::resource('/process', ProcessoController::class);
+        Route::resource('/status', StatusController::class);
+        Route::get('/lawyer', [UserController::class, 'indexLawyer']);
+        Route::get('/client', [UserController::class, 'indexClient']);
     });
     Route::get('/me', [AuthController::class, 'me']);
 });

@@ -43,7 +43,7 @@ class ProcessoService
             'id_cliente' => 'required|integer',
             'num_processo_sei' => 'required|string|max:255',
             'id_status' => 'required|integer',
-            'observacao' => 'required|string|max:255',
+            'observacao' => 'nullable|string|max:255',
         ];
         $customMessages = [
             '*' => [
@@ -54,7 +54,15 @@ class ProcessoService
         $validator = Validator::make($filledFields, $rules, $customMessages);
         if ($validator->fails()) {
             $errors = $validator->errors()->all();
-            $errorMessage = 'Ocorreu o seguinte erro na operação: ' . implode(', ', $errors);
+            $errorMessage = 'Ocorreu o seguinte erro na operação: ';
+            foreach ($errors as $index => $error) {
+                $errorMessage .= $error;
+                if ($index < count($errors) - 1) {
+                    $errorMessage .= ', ';
+                } else {
+                    $errorMessage .= '.';
+                }
+            }
             return [
                 'message' => $errorMessage,
                 'status' => Response::HTTP_UNPROCESSABLE_ENTITY,
