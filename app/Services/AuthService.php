@@ -45,10 +45,10 @@ class AuthService
             'senha' => 'required|string|max:20'
         ];
         $customMessages = [
-            'cpf.required' => 'O campo CPF é obrigatório.',
-            'senha.required' => 'O campo senha é obrigatório.',
-            'cpf.max' => 'O campo CPF deve ter no máximo 11 caracteres.',
-            'senha.max' => 'O campo senha deve ter no máximo 20 caracteres.'
+            '*' => [
+                'required' => 'O campo :attribute é obrigatório',
+                'max' => 'O campo :attribute deve conter no máximo :max caracteres',
+            ],
         ];
         $validator = Validator::make($filledFields, $rules, $customMessages);
         if ($validator->fails()) {

@@ -17,12 +17,7 @@ class UserCollection extends Collection
     public function toArray()
     {
         return $this->map(function ($user) {
-            $userAttributes = $user->getAttributes();
-            $filteredAttributes = array_filter($userAttributes, function ($value) {
-                return !is_null($value);
-            });
-            $userCollection = array_merge($filteredAttributes);
-            return $userCollection;
+            return $user->toArray();
         })->all();
     }
 }

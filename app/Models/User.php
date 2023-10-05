@@ -39,8 +39,11 @@ class User extends Authenticatable implements JWTSubject
         'email',
         'dat_nasc',
         'id_perfil',
+        'id_sexo',
         'endereco'
     ];
+
+    protected $hidden = ['senha'];
 
     /**
      * Obtém o identificador que será armazenado no token JWT.

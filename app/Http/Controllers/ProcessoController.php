@@ -76,7 +76,7 @@ class ProcessoController extends Controller
     {
         try {
             $userData = $this->authController->me();
-            return $userData->original["user"][0];
+            return reset($userData->original["user"]);
         } catch (\Exception $e) {
             throw new Exception($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }

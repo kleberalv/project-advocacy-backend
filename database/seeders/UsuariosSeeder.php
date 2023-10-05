@@ -27,6 +27,7 @@ class UsuariosSeeder extends Seeder
             'dat_nasc' => '1999-07-27',
             'endereco' => 'Rua Exemplo, 123',
             'id_perfil' => 1,
+            'id_sexo' => 1,
             'created_at' => $now,
         ]);
         for ($i = 0; $i < 3; $i++) {
@@ -38,6 +39,7 @@ class UsuariosSeeder extends Seeder
                 'dat_nasc' => $faker->date('Y-m-d', '2000-01-01'),
                 'endereco' => $faker->address,
                 'id_perfil' => 2,
+                'id_sexo' => rand(1, 7),
                 'created_at' => $now,
             ]);
         }
@@ -50,6 +52,7 @@ class UsuariosSeeder extends Seeder
                 'dat_nasc' => $faker->date('Y-m-d', '2000-01-01'),
                 'endereco' => $faker->address,
                 'id_perfil' => 3,
+                'id_sexo' => rand(1, 7),
                 'created_at' => $now,
             ]);
         }

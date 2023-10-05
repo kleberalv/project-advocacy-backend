@@ -88,7 +88,7 @@ class UserRepository
     public function getIndex()
     {
         $usuarioAtual = Auth::user();
-        return User::select('id_usuario', 'id_perfil', 'nome', 'cpf', 'email', 'dat_nasc', 'endereco')
+        return User::select('id_usuario', 'id_perfil', 'id_sexo', 'nome', 'cpf', 'email', 'dat_nasc', 'endereco')
             ->whereNull('deleted_at')
             ->where('id_usuario', '!=', $usuarioAtual->id_usuario)
             ->get();

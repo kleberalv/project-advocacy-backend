@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('tab_usuarios', function (Blueprint $table) {
             $table->id('id_usuario');
             $table->unsignedBigInteger('id_perfil');
+            $table->unsignedBigInteger('id_sexo');
             $table->string('nome');
             $table->string('cpf')->unique();
             $table->string('senha');
@@ -24,6 +25,7 @@ return new class extends Migration
             $table->softDeletes('deleted_at');
 
             $table->foreign('id_perfil')->references('id_tipo_perfil')->on('tab_tipo_perfil');
+            $table->foreign('id_sexo')->references('id_sexo')->on('tab_sexo');
         });
     }
 

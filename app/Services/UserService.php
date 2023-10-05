@@ -47,6 +47,7 @@ class UserService
             'email' => 'required|string|email|max:255',
             'dat_nasc' => 'required|date',
             'id_perfil' => 'required|integer',
+            'id_sexo' => 'required|integer',
             'endereco' => 'required|string|max:255',
         ];
         $customMessages = [
@@ -56,6 +57,9 @@ class UserService
                 'max' => 'O campo :attribute deve conter no máximo :max caracteres',
             ],
             'cpf.unique' => 'Este CPF já está cadastrado para outro usuário',
+            'senha.string' => 'O campo senha deve ser uma string',
+            'senha.min' => 'O campo senha deve conter no mínimo :min caracteres',
+            'senha.max' => 'O campo senha deve conter no máximo :max caracteres',
         ];
         $validator = Validator::make($filledFields, $rules, $customMessages);
         if ($validator->fails()) {
