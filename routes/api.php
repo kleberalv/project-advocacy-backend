@@ -22,15 +22,15 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout']);
 
 Route::group(['middleware' => 'autenticacao'], function () {
-    Route::get('/me', [AuthController::class, 'me']);
-    Route::put('/updateProfile', [UserController::class, 'update']);
     Route::group(['middleware' => 'permissao'], function () {
         Route::resource('/users', UserController::class);
         Route::resource('/profiles', TipoPerfilController::class);
         Route::resource('/process', ProcessoController::class);
         Route::resource('/status', StatusController::class);
         Route::resource('/sexos', SexoController::class);
-        Route::get('/lawyer', [UserController::class, 'indexLawyer']);
-        Route::get('/client', [UserController::class, 'indexClient']);
+        Route::get('/me', [AuthController::class, 'me'])->name('me.index');
+        Route::put('/updateMe', [UserController::class, 'update'])->name('me.update');
+        Route::get('/lawyer', [UserController::class, 'indexLawyer'])->name('lawyer.index');
+        Route::get('/client', [UserController::class, 'indexClient'])->name('client.index');
     });
 });

@@ -18,7 +18,7 @@ class TokenUser extends Model
      *
      * @var string
      */
-    protected $table = 'tab_tokens_users';
+    protected $table = 'tab_tokens_usuarios';
 
     /**
      * Nome da chave primária na tabela.

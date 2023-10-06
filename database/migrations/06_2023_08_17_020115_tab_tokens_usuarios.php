@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('tab_tokens_users', function (Blueprint $table) {
+        Schema::create('tab_tokens_usuarios', function (Blueprint $table) {
             $table->id('id_token');
             $table->string('tokenable_type');
             $table->unsignedBigInteger('tokenable_id_usuario');

@@ -5,12 +5,21 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use App\Services\PermissaoService;
 
 /**
  * Middleware para verificação de permissão de usuário.
  */
 class MiddlewarePermissao
 {
+
+    protected $permissaoService;
+
+    public function __construct(PermissaoService $permissaoService)
+    {
+        $this->permissaoService = $permissaoService;
+    }
+
     /**
      * Manipula a requisição, verificando a permissão do usuário.
      *
@@ -24,7 +33,10 @@ class MiddlewarePermissao
     {
         try {
             $user = auth()->user();
-            if ($user->id_perfil === 3 && $request->method() !== 'GET') {
+            $action = $request->method();
+            $resource = $request->route()->getName();
+            $hasPermission = $this->permissaoService->verificarPermissao($user->id_perfil, $action, $resource);
+            if (!$hasPermission) {
                 return response(['errors' => 'Usuário não possui autorização para essa ação'], Response::HTTP_METHOD_NOT_ALLOWED);
             }
             return $next($request);
