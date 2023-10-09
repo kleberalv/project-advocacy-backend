@@ -14,7 +14,7 @@ use App\Http\Controllers\SexoController;
 |--------------------------------------------------------------------------
 | Rota de login/logout
 | Middleware->Autenticacao: Verifica se o token é valido
-| Middleware->permissao: Verifica se o usuário em questão pode acessar as rotas de admin
+| Middleware->permissao: Verifica se o usuário em questão tem permissão de acesso a determinada funcionalidade
 |
 */
 

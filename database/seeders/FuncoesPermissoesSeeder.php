@@ -7,6 +7,11 @@ use Illuminate\Support\Facades\DB;
 
 class FuncoesPermissoesSeeder extends Seeder
 {
+    /**
+     * Executa as operações de seeding no banco de dados.
+     *
+     * @return void
+     */
     public function run()
     {
         DB::table('tab_funcoes_permissoes')->insert([
@@ -36,6 +41,7 @@ class FuncoesPermissoesSeeder extends Seeder
             ['id_perfil' => 1, 'permissao_id' => 24],
 
             ['id_perfil' => 2, 'permissao_id' => 2],
+            ['id_perfil' => 2, 'permissao_id' => 10],
             ['id_perfil' => 2, 'permissao_id' => 14],
             ['id_perfil' => 2, 'permissao_id' => 17],
             ['id_perfil' => 2, 'permissao_id' => 18],
@@ -46,7 +52,6 @@ class FuncoesPermissoesSeeder extends Seeder
             ['id_perfil' => 2, 'permissao_id' => 23],
             ['id_perfil' => 2, 'permissao_id' => 24],
 
-            ['id_perfil' => 3, 'permissao_id' => 2],
             ['id_perfil' => 3, 'permissao_id' => 14],
             ['id_perfil' => 3, 'permissao_id' => 18],
             ['id_perfil' => 3, 'permissao_id' => 23],

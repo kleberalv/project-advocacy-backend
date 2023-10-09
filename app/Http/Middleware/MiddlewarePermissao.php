@@ -12,9 +12,18 @@ use App\Services\PermissaoService;
  */
 class MiddlewarePermissao
 {
-
+    /**
+     * Serviço de manipulação de permissões.
+     *
+     * @var PermissaoService
+     */
     protected $permissaoService;
 
+    /**
+     * Cria uma nova instância do middleware.
+     *
+     * @param PermissaoService $permissaoService O serviço de manipulação de permissões.
+     */
     public function __construct(PermissaoService $permissaoService)
     {
         $this->permissaoService = $permissaoService;

@@ -7,6 +7,11 @@ use Illuminate\Support\Facades\DB;
 
 class PermissoesSeeder extends Seeder
 {
+    /**
+     * Executa as operações de seeding no banco de dados.
+     *
+     * @return void
+     */
     public function run()
     {
         DB::table('tab_permissoes')->insert([

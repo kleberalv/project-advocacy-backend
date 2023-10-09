@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Executa as migrações.
+     */
     public function up()
     {
         Schema::create('tab_funcoes_permissoes', function (Blueprint $table) {
@@ -20,6 +23,9 @@ return new class extends Migration
         });
     }
 
+    /**
+     * Reverte as migrações.
+     */
     public function down()
     {
         Schema::dropIfExists('tab_funcoes_permissoes');
