@@ -22,10 +22,6 @@ Este contêiner hospeda uma interface web do phpMyAdmin, uma ferramenta de admin
 
 Atuando como servidor web, o contêiner Nginx direciona as solicitações HTTP para a aplicação PHP. Além disso, ele proporciona uma camada extra de segurança e otimização de desempenho, contribuindo para uma experiência de usuário mais eficiente e segura.
 
-5. frontend:
-
-Este contêiner é encarregado de hospedar a camada frontal (frontend) do aplicativo. Construído a partir do código-fonte do projeto de frontend, ele inicia um ambiente de desenvolvimento para a interface do usuário, utilizando ferramentas como o npm. Para configurar esse contêiner, é importante garantir que o frontend (project-advocacy-frontend) esteja localizado na mesma pasta deste projeto.
-
 ## Licença
 
 Este projeto é licenciado sob a [Licença MIT](LICENSE). Consulte o arquivo [LICENSE](LICENSE) para obter mais detalhes.
