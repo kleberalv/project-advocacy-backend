@@ -69,7 +69,7 @@ Siga as etapas abaixo para configurar e executar o projeto:
 
 7. Pronto, a API está pronta para ser utilizada pela URL http://localhost:8080/;
 
-8. Caso tenha intersse em roda-la em conjunto com o frontend em react, basta acessar e ler o README.md do [project-advocacy-frontend](https://github.com/kleberalv/project-advocacy-frontend/blob/master/README.md).
+8. Caso tenha interesse em roda-la em conjunto com o frontend em react, basta acessar e ler o README.md do [project-advocacy-frontend](https://github.com/kleberalv/project-advocacy-frontend/blob/master/README.md).
 
 ## Tecnologias utilizadas
 <div align="left">
