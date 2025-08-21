@@ -10,24 +10,14 @@ ARG uid
 
 # Instalação de dependências do sistema
 RUN apt-get update && apt-get install -y \
-    git \
-    curl \
-    libpng-dev \
+    libpng-dev  \
     libonig-dev \
     libxml2-dev \
     zip \
     unzip \
     build-essential \
     openssl \
-    libssl-dev \
-    git-core \
-    python3 \
-    gnupg \
-    nano
-
-# Adiciona repositório do Node.js e instala a versão 14.x
-RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
-RUN apt-get -y install nodejs
+    libssl-dev
 
 # Limpa o cache e remove listas de pacotes
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*

@@ -135,6 +135,12 @@ class AuthService
     public function logout()
     {
         $user = auth()->user();
+        if (!$user) {
+            return [
+                'message' => 'Este usuário já não está mais autenticado',
+                'status' => Response::HTTP_OK,
+            ];
+        }
         $this->userRepository->setTokenUserLogout($user);
         return [
             'message' => 'Usuário deslogado com sucesso',

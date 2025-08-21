@@ -50,24 +50,26 @@ Este projeto é fornecido "no estado em que se encontra", sem garantias de qualq
 
 Siga as etapas abaixo para configurar e executar o projeto:
 
-1. Clone os repositórios do project-advocacy-backend e project-advocacy-frontend para a mesma pasta em seu sistema.
+1. Clone o repositório do project-advocacy-backend;
 
-2. Abra um terminal e navegue até o diretório project-advocacy-backend.
+2. Abra um terminal e navegue até o diretório project-advocacy-backend;
 
-3. Copie os dados do arquivo .env.example, crie um arquivo na raiz do projeto chamado .env e cole dentro dele os dados presentes em .env.example.
+3. Copie os dados do arquivo .env.example, crie um arquivo na raiz do projeto chamado .env e cole dentro dele os dados presentes em .env.example;
 
 4. Execute o seguinte comando para construir e iniciar os contêineres:
-`docker-compose up -d --build`
+`docker-compose up -d --build`;
 
 5. Após o download e a criação dos contêineres, acesse o contêiner app através do terminal:
-`docker exec -it apllication-server-app /bin/bash`
+`docker exec -it application-server-app /bin/bash`;
 
 6. Dentro do contêiner app, execute os seguintes comandos:
 `composer install`,
 `php artisan migrate` e 
-`php artisan db:seed`.
+`php artisan db:seed`;
 
-7. Agora, você pode acessar o projeto em seu navegador através do link: http://localhost:3000/.
+7. Pronto, a API está pronta para ser utilizada pela URL http://localhost:8080/;
+
+8. Caso tenha intersse em roda-la em conjunto com o frontend em react, basta acessar e ler o README.md do [project-advocacy-frontend](https://github.com/kleberalv/project-advocacy-frontend/blob/master/README.md).
 
 ## Tecnologias utilizadas
 <div align="left">
@@ -83,8 +85,6 @@ Siga as etapas abaixo para configurar e executar o projeto:
 ## Ferramentas de desenvolvimento utilizadas
 <div align="left">
     <img align="center" alt="Docker" src="https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white"> 
-    <img align="center" alt="Git" src="https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white"> 
-    <img align="center" alt="npm" src="https://img.shields.io/badge/npm-CB3837?style=for-the-badge&logo=npm&logoColor=white">
     <img align="center" alt="Composer" src="https://img.shields.io/badge/Composer-885630?style=for-the-badge&logo=composer&logoColor=white">
     <img align="center" alt="MariaDB" src="https://img.shields.io/badge/MariaDB-003545?style=for-the-badge&logo=mariadb&logoColor=white">
     <img align="center" alt="phpMyAdmin" src="https://img.shields.io/badge/phpMyAdmin-4479A1?style=for-the-badge&logo=phpmyadmin&logoColor=white">
@@ -92,4 +92,4 @@ Siga as etapas abaixo para configurar e executar o projeto:
 </div>
 
 # Copyright ©
-Copyright © Developed by: Kleber Alves Bezerera Junior - Sênior Developer 2022.
+Copyright © Developed by: Kleber Alves Bezerera Junior - Sênior Developer 2025.
