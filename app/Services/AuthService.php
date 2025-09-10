@@ -81,13 +81,13 @@ class AuthService
         if (!Hash::check($filledFields['senha'], $user->senha)) {
             return [
                 'message' => 'CPF ou senha incorretos. Por favor, verifique e tente novamente',
-                'status' => Response::HTTP_NOT_FOUND,
+                'status' => Response::HTTP_UNAUTHORIZED,
             ];
         }
         if ($user && $user->deleted_at !== null) {
             return [
                 'message' => 'Este usuário está desativado',
-                'status' => Response::HTTP_NOT_FOUND,
+                'status' => Response::HTTP_FORBIDDEN,
             ];
         }
         return null;

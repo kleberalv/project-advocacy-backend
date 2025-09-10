@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Seeders;
+
 use Illuminate\Database\Seeder;
 use Database\Seeders\UsuariosSeeder;
 use Database\Seeders\TipoPerfilSeeder;
@@ -16,14 +18,16 @@ class DatabaseSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
-        $this->call(TipoPerfilSeeder::class);
-        $this->call(SexoSeeder::class);
-        $this->call(UsuariosSeeder::class);
-        $this->call(StatusSeeder::class);
-        $this->call(ProcessoSeeder::class);
-        $this->call(PermissoesSeeder::class);
-        $this->call(FuncoesPermissoesSeeder::class);
+        $this->call([
+            TipoPerfilSeeder::class,
+            SexoSeeder::class,
+            UsuariosSeeder::class,
+            StatusSeeder::class,
+            ProcessoSeeder::class,
+            PermissoesSeeder::class,
+            FuncoesPermissoesSeeder::class,
+        ]);
     }
 }

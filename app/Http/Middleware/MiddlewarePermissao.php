@@ -46,7 +46,7 @@ class MiddlewarePermissao
             $resource = $request->route()->getName();
             $hasPermission = $this->permissaoService->verificarPermissao($user->id_perfil, $action, $resource);
             if (!$hasPermission) {
-                return response(['errors' => 'Usuário não possui autorização para essa ação'], Response::HTTP_METHOD_NOT_ALLOWED);
+                return response(['errors' => 'Usuário não possui autorização para essa ação'], Response::HTTP_FORBIDDEN);
             }
             return $next($request);
         } catch (\Exception $e) {
